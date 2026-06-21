@@ -1,0 +1,193 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Settings
+{% endblock %}
+
+{% block page_title %}
+Account Settings
+{% endblock %}
+
+{% block content %}
+
+<section class="settings-page">
+
+    <!-- PROFILE SETTINGS -->
+
+    <div class="settings-card">
+
+        <h3>Profile Information</h3>
+
+        <form class="settings-form">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Full Name</label>
+
+                    <input
+                        type="text"
+                        value="Gaurav Singh"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Email Address</label>
+
+                    <input
+                        type="email"
+                        value="gaurav@example.com"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Bio</label>
+
+                <textarea
+                    rows="4"
+                >Linux learner focused on DevOps and automation.</textarea>
+
+            </div>
+
+            <button class="save-btn">
+
+                Save Changes
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- PASSWORD -->
+
+    <div class="settings-card">
+
+        <h3>Change Password</h3>
+
+        <form class="settings-form">
+
+            <div class="form-group">
+
+                <label>Current Password</label>
+
+                <input
+                    type="password"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>New Password</label>
+
+                <input
+                    type="password"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Confirm Password</label>
+
+                <input
+                    type="password"
+                >
+
+            </div>
+
+            <button class="save-btn">
+
+                Update Password
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- PREFERENCES -->
+
+    <div class="settings-card">
+
+        <h3>Preferences</h3>
+
+        <div class="setting-option">
+
+            <div>
+
+                <h4>Email Notifications</h4>
+
+                <p>
+                    Receive challenge and XP updates.
+                </p>
+
+            </div>
+
+            <label class="switch">
+
+                <input type="checkbox" checked>
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+        <div class="setting-option">
+
+            <div>
+
+                <h4>Leaderboard Visibility</h4>
+
+                <p>
+                    Show your profile on public rankings.
+                </p>
+
+            </div>
+
+            <label class="switch">
+
+                <input type="checkbox" checked>
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+        <div class="setting-option">
+
+            <div>
+
+                <h4>Dark Theme</h4>
+
+                <p>
+                    Use LinuxLabX dark interface.
+                </p>
+
+            </div>
+
+            <label class="switch">
+
+                <input type="checkbox" checked>
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

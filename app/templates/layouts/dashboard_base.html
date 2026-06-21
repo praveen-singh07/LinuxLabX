@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        LinuxLabX Dashboard
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    >
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/sidebar.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <link rel="stylesheet" href="/static/css/achievement.css">
+    <link rel="stylesheet" href="/static/css/analytics.css">
+    <link rel="stylesheet" href="/static/css/challenge_details.css">
+    <link rel="stylesheet" href="/static/css/settings.css">
+    <link rel="stylesheet" href="/static/css/terminal.css">
+    
+    {% block css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-top">
+
+            <a href="/" class="sidebar-logo">
+
+                <i class="fa-solid fa-terminal"></i>
+
+                <span>LinuxLabX</span>
+
+            </a>
+
+        </div>
+
+        <div class="sidebar-menu">
+
+            <a href="#" class="menu-item active">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-flask"></i>
+                <span>Labs</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Terminal</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Challenges</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-trophy"></i>
+                <span>Leaderboard</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-award"></i>
+                <span>Achievements</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-book"></i>
+                <span>Notes</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </a>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="dashboard-main">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h2>
+                    {% block page_title %}
+                    Dashboard
+                    {% endblock %}
+                </h2>
+
+            </div>
+
+            <div class="header-profile">
+
+                <div class="user-info">
+
+                    <h4>Gaurav</h4>
+
+                    <p>Linux Learner</p>
+
+                </div>
+
+                <div class="profile-avatar">
+                    GS
+                </div>
+
+            </div>
+
+        </header>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+{% block js %}
+{% endblock %}
+
+</body>
+</html>

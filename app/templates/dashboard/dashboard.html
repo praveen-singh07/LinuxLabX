@@ -1,0 +1,496 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block page_title %}
+Dashboard Overview
+{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-content">
+
+    <!-- HERO -->
+
+    <div class="welcome-banner">
+
+        <div class="welcome-left">
+
+            <span class="welcome-tag">
+
+                🔥 Welcome Back
+
+            </span>
+
+            <h1>
+
+                Continue mastering Linux
+                one challenge at a time.
+
+            </h1>
+
+            <p>
+
+                Complete labs, solve challenges
+                and climb the leaderboard.
+
+            </p>
+
+            <div class="banner-buttons">
+
+                <a href="/terminal" class="primary-btn">
+
+                    Open Terminal
+
+                </a>
+
+                <a href="/challenges" class="secondary-btn">
+
+                    Explore Challenges
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="welcome-right">
+
+            <div class="xp-circle">
+
+                <h2>
+
+                    1240
+
+                </h2>
+
+                <span>
+
+                    XP
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-flask"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+
+                    12
+
+                </h2>
+
+                <p>
+
+                    Labs Completed
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-terminal"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+
+                    18
+
+                </h2>
+
+                <p>
+
+                    Challenges Solved
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-fire"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+
+                    8
+
+                </h2>
+
+                <p>
+
+                    Day Streak
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-trophy"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+
+                    #12
+
+                </h2>
+
+                <p>
+
+                    Global Rank
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ROW -->
+
+    <div class="dashboard-row">
+
+        <!-- PROGRESS -->
+
+        <div class="dashboard-card">
+
+            <h3>
+
+                Learning Progress
+
+            </h3>
+
+            <div class="progress-box">
+
+                <div class="progress-header">
+
+                    <span>
+
+                        Beginner Track
+
+                    </span>
+
+                    <span>
+
+                        68%
+
+                    </span>
+
+                </div>
+
+                <div class="progress-bar">
+
+                    <div
+                    class="progress-fill"
+                    style="width:68%;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="skill-list">
+
+                <div class="skill">
+
+                    Linux Basics
+
+                    <span>
+
+                        85%
+
+                    </span>
+
+                </div>
+
+                <div class="skill">
+
+                    File Management
+
+                    <span>
+
+                        70%
+
+                    </span>
+
+                </div>
+
+                <div class="skill">
+
+                    Bash Scripting
+
+                    <span>
+
+                        45%
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVITY -->
+
+        <div class="dashboard-card">
+
+            <h3>
+
+                Recent Activity
+
+            </h3>
+
+            <div class="activity-list">
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+
+                        ✓
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+
+                            Completed Linux Navigation Basics
+
+                        </h4>
+
+                        <p>
+
+                            2 Hours Ago
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+
+                        🏆
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+
+                            Earned Explorer Badge
+
+                        </h4>
+
+                        <p>
+
+                            Yesterday
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+
+                        ⚡
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+
+                            Reached 1200 XP
+
+                        </h4>
+
+                        <p>
+
+                            Yesterday
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECOND ROW -->
+
+    <div class="dashboard-row">
+
+        <!-- RECOMMENDED -->
+
+        <div class="dashboard-card">
+
+            <h3>
+
+                Recommended Labs
+
+            </h3>
+
+            <div class="lab-list">
+
+                <div class="lab-item">
+
+                    <div>
+
+                        <div class="lab-name">
+
+                            Linux Permissions
+
+                        </div>
+
+                    </div>
+
+                    <div class="lab-tag">
+
+                        Easy
+
+                    </div>
+
+                </div>
+
+                <div class="lab-item">
+
+                    <div>
+
+                        <div class="lab-name">
+
+                            Networking Basics
+
+                        </div>
+
+                    </div>
+
+                    <div class="lab-tag">
+
+                        Medium
+
+                    </div>
+
+                </div>
+
+                <div class="lab-item">
+
+                    <div>
+
+                        <div class="lab-name">
+
+                            Bash Automation
+
+                        </div>
+
+                    </div>
+
+                    <div class="lab-tag">
+
+                        Hard
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACHIEVEMENTS -->
+
+        <div class="dashboard-card">
+
+            <h3>
+
+                Recent Achievements
+
+            </h3>
+
+            <div class="achievement-list">
+
+                <div class="achievement-item">
+
+                    🏆 Explorer
+
+                </div>
+
+                <div class="achievement-item">
+
+                    🔥 7 Day Streak
+
+                </div>
+
+                <div class="achievement-item">
+
+                    ⚡ 1000 XP Milestone
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

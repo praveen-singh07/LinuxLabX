@@ -1,0 +1,131 @@
+/* =========================
+   LAPTOP
+========================= */
+
+@media (max-width:1300px){
+
+    .hero-title{
+        font-size:60px;
+    }
+
+    .hero-container{
+        gap:50px;
+    }
+
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width:1100px){
+
+    .hero-container{
+
+        grid-template-columns:1fr;
+
+        gap:60px;
+    }
+
+    .hero-left{
+        order:1;
+    }
+
+    .hero-right{
+        order:2;
+    }
+
+    .hero-title{
+        font-size:62px;
+    }
+
+    .terminal-card{
+        width:100%;
+    }
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width:768px){
+
+    .navbar-container{
+
+        padding:0 20px;
+    }
+
+    .nav-links{
+        display:none;
+    }
+
+    .hero{
+
+        padding-top:100px;
+    }
+
+    .hero-container{
+
+        padding:20px;
+    }
+
+    .hero-title{
+
+        font-size:48px;
+    }
+
+    .hero-description{
+
+        font-size:16px;
+    }
+
+    .hero-buttons{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+    }
+
+    .btn-primary,
+    .btn-secondary{
+
+        width:100%;
+    }
+
+    .terminal-body{
+
+        padding:24px;
+
+        font-size:14px;
+    }
+
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media (max-width:500px){
+
+    .hero-title{
+
+        font-size:40px;
+    }
+
+    .logo-text{
+
+        font-size:18px;
+    }
+
+    .signup-btn{
+
+        width:95px;
+    }
+
+    .login-btn{
+
+        width:75px;
+    }
+
+}

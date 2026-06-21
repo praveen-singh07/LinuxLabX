@@ -1,0 +1,335 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}LinuxLabX{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/home.css">
+{% endblock %}
+
+{% block content %}
+
+<!-- NAVBAR -->
+
+<header class="navbar">
+
+    <div class="navbar-container">
+
+        <a href="/" class="logo">
+
+            <i class="fa-solid fa-terminal logo-icon"></i>
+
+            <div class="logo-text">
+                LinuxLab<span>X</span>
+            </div>
+
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="/" class="active">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Labs</a>
+            <a href="#">Roadmap</a>
+            <a href="#">Pricing</a>
+            <a href="#">Docs</a>
+            <a href="#">About</a>
+
+        </nav>
+
+        <div class="nav-right">
+
+            <div class="theme-btn">
+                <i class="fa-regular fa-moon"></i>
+            </div>
+
+            <a href="#" class="login-btn">
+                Login
+            </a>
+
+            <a href="#" class="signup-btn">
+                Sign Up
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-container">
+
+        <div class="hero-left">
+
+            <div class="section-badge">
+                <i class="fa-solid fa-circle"></i>
+                Learn. Practice. Master Linux.
+            </div>
+
+            <h1 class="hero-title">
+
+                Your Interactive
+
+                <span>Linux</span>
+
+                Learning
+
+                Playground
+
+            </h1>
+
+            <p class="hero-description">
+
+                Master real Linux skills through hands-on labs,
+                challenges, and an interactive terminal —
+                all in one modern platform.
+
+                <br><br>
+
+                Level up. Track progress.
+                Build your DevOps future.
+
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#" class="btn-primary">
+
+                    Start Learning Now
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+                <a href="#" class="btn-secondary">
+
+                    Explore Features
+
+                    <i class="fa-regular fa-circle-play"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-right">
+
+           <div class="terminal-card">
+
+    <div class="terminal-header">
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+        <div class="terminal-status">
+
+            <div class="status-pill active">
+                Connected
+            </div>
+
+            <div class="status-pill">
+                Linux VM
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="terminal-body">
+
+<pre>
+user@linuxlabx:~$ pwd
+/home/linuxlabx
+
+user@linuxlabx:~$ ls
+
+labs
+scripts
+projects
+notes
+
+user@linuxlabx:~$ whoami
+
+linuxlabx
+
+user@linuxlabx:~$ sudo lab start
+
+[✓] Terminal Connected
+[✓] Challenge Loaded
+[✓] Ready For Practice
+
+user@linuxlabx:~$
+</pre>
+
+    </div>
+
+</div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FEATURES -->
+
+<section class="features-section">
+
+    <div class="features-heading">
+
+        <div class="section-badge">
+            POWERFUL LEARNING EXPERIENCE
+        </div>
+
+        <h2>
+            Everything You Need To Master Linux
+        </h2>
+
+        <p>
+            Structured learning, real practice,
+            and advanced tracking designed for everyone.
+        </p>
+
+    </div>
+
+    <div class="features-grid">
+
+    <!-- CARD 1 -->
+
+    <div class="feature-card large-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-terminal"></i>
+        </div>
+
+        <h3>Interactive Terminal</h3>
+
+        <p>
+            Practice Linux commands directly inside
+            a simulated terminal environment.
+        </p>
+
+        <div class="feature-widget terminal-widget">
+
+            <div class="terminal-line"></div>
+            <div class="terminal-line short"></div>
+            <div class="terminal-line"></div>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 2 -->
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-flask"></i>
+        </div>
+
+        <h3>Hands-on Labs</h3>
+
+        <p>
+            Guided practical labs for Linux,
+            networking and scripting.
+        </p>
+
+        <div class="feature-widget progress-widget">
+
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 3 -->
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+
+        <h3>Real Challenges</h3>
+
+        <p>
+            Solve real-world Linux tasks and
+            improve problem solving skills.
+        </p>
+
+        <div class="feature-widget">
+
+            <div class="widget-dots">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 4 -->
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-chart-line"></i>
+        </div>
+
+        <h3>Progress Tracking</h3>
+
+        <p>
+            Monitor XP, streaks and
+            completed learning paths.
+        </p>
+
+        <div class="feature-widget progress-widget">
+
+            <div class="progress-bar">
+                <div class="progress-fill progress-fill-2"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 5 -->
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-award"></i>
+        </div>
+
+        <h3>Achievements & Badges</h3>
+
+        <p>
+            Unlock achievements and earn
+            recognition as you learn.
+        </p>
+
+        <div class="feature-widget badge-widget">
+
+            <div class="badge-mini">
+                <i class="fa-solid fa-star"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+{% endblock %}

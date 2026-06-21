@@ -1,0 +1,370 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Challenges
+{% endblock %}
+
+{% block page_title %}
+Linux Challenges
+{% endblock %}
+
+{% block content %}
+
+<section class="challenges-page">
+
+    <!-- HERO -->
+
+    <div class="challenge-hero">
+
+        <div>
+
+            <span class="hero-tag">
+
+                🚀 Practice Daily
+
+            </span>
+
+            <h1>
+
+                Solve real Linux
+                challenges and
+                earn XP.
+
+            </h1>
+
+            <p>
+
+                Master Linux with interactive
+                tasks, labs and hands-on
+                terminal exercises.
+
+            </p>
+
+        </div>
+
+        <div class="hero-stats">
+
+            <div class="mini-card">
+
+                <h2>48</h2>
+
+                <p>Total Challenges</p>
+
+            </div>
+
+            <div class="mini-card">
+
+                <h2>18</h2>
+
+                <p>Completed</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOOLBAR -->
+
+    <div class="challenge-toolbar">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-search"></i>
+
+            <input
+            type="text"
+            placeholder="Search Challenges..."
+            >
+
+        </div>
+
+        <select>
+
+            <option>
+
+                All Categories
+
+            </option>
+
+            <option>
+
+                Linux Basics
+
+            </option>
+
+            <option>
+
+                Networking
+
+            </option>
+
+            <option>
+
+                Bash Scripting
+
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- GRID -->
+
+    <div class="challenge-grid">
+
+
+        <!-- CARD -->
+
+        <div class="challenge-card">
+
+            <div class="challenge-top">
+
+                <span class="difficulty easy">
+
+                    Easy
+
+                </span>
+
+                <span class="xp">
+
+                    +100 XP
+
+                </span>
+
+            </div>
+
+
+            <div class="challenge-icon">
+
+                <i class="fa-solid fa-folder-tree"></i>
+
+            </div>
+
+
+            <h3>
+
+                Linux Navigation Basics
+
+            </h3>
+
+            <p>
+
+                Learn pwd, cd and ls commands
+                by solving practical tasks.
+
+            </p>
+
+
+            <div class="challenge-meta">
+
+                <span>
+
+                    ⏱ 15 min
+
+                </span>
+
+                <span>
+
+                    ⭐ 4.8
+
+                </span>
+
+            </div>
+
+
+            <div class="progress-box">
+
+                <div class="progress-label">
+
+                    70% Completed
+
+                </div>
+
+                <div class="progress-bar">
+
+                    <div
+                    class="progress-fill"
+                    style="width:70%;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <a
+            href="/challenge-details"
+            class="challenge-btn">
+
+                Continue
+
+            </a>
+
+        </div>
+
+
+
+        <!-- CARD -->
+
+        <div class="challenge-card">
+
+            <div class="challenge-top">
+
+                <span class="difficulty medium">
+
+                    Medium
+
+                </span>
+
+                <span class="xp">
+
+                    +250 XP
+
+                </span>
+
+            </div>
+
+
+            <div class="challenge-icon">
+
+                <i class="fa-solid fa-network-wired"></i>
+
+            </div>
+
+
+            <h3>
+
+                Networking Basics
+
+            </h3>
+
+            <p>
+
+                Learn ping, traceroute and
+                Linux networking commands.
+
+            </p>
+
+
+            <div class="challenge-meta">
+
+                <span>
+
+                    ⏱ 30 min
+
+                </span>
+
+                <span>
+
+                    ⭐ 4.9
+
+                </span>
+
+            </div>
+
+
+            <div class="progress-box">
+
+                <div class="progress-label">
+
+                    Not Started
+
+                </div>
+
+                <div class="progress-bar">
+
+                    <div
+                    class="progress-fill"
+                    style="width:0%;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <a href="#"
+            class="challenge-btn">
+
+                Start Challenge
+
+            </a>
+
+        </div>
+
+
+
+        <!-- CARD -->
+
+        <div class="challenge-card locked">
+
+            <div class="locked-overlay">
+
+                🔒 Locked
+
+            </div>
+
+            <div class="challenge-top">
+
+                <span class="difficulty hard">
+
+                    Hard
+
+                </span>
+
+                <span class="xp">
+
+                    +500 XP
+
+                </span>
+
+            </div>
+
+            <div class="challenge-icon">
+
+                <i class="fa-solid fa-code"></i>
+
+            </div>
+
+            <h3>
+
+                Bash Automation
+
+            </h3>
+
+            <p>
+
+                Automate Linux workflows
+                using shell scripts.
+
+            </p>
+
+            <div class="challenge-meta">
+
+                <span>
+
+                    ⏱ 45 min
+
+                </span>
+
+                <span>
+
+                    ⭐ 5.0
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+{% endblock %}

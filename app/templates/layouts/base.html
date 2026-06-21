@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        LinuxLabX
+        {% endblock %}
+    </title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/responsive.css">
+
+    {% block css %}
+    {% endblock %}
+</head>
+
+<body>
+
+    <!-- Background Effects -->
+
+    <div class="bg-grid"></div>
+
+    <div class="bg-glow glow-left"></div>
+    <div class="bg-glow glow-right"></div>
+
+    {% block content %}
+    {% endblock %}
+
+    <script src="/static/js/main.js"></script>
+
+    {% block js %}
+    {% endblock %}
+
+</body>
+</html>

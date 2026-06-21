@@ -1,0 +1,128 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Challenge Details
+{% endblock %}
+
+{% block page_title %}
+Linux Navigation Basics
+{% endblock %}
+
+{% block content %}
+
+<section class="challenge-details-page">
+
+    <div class="challenge-details-layout">
+
+        <!-- LEFT -->
+
+        <div class="challenge-info-card">
+
+            <div class="challenge-badge">
+                Easy • 100 XP
+            </div>
+
+            <h2>
+                Linux Navigation Basics
+            </h2>
+
+            <p class="challenge-description">
+                Learn how to navigate the Linux filesystem using
+                pwd, ls and cd commands.
+            </p>
+
+            <div class="objective-section">
+
+                <h3>Objectives</h3>
+
+                <ul>
+
+                    <li>
+                        Print current directory using pwd
+                    </li>
+
+                    <li>
+                        List all files using ls
+                    </li>
+
+                    <li>
+                        Navigate to Documents folder
+                    </li>
+
+                    <li>
+                        Return back to home directory
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div class="hint-section">
+
+                <h3>Hints</h3>
+
+                <div class="hint-card">
+
+                    Use pwd to check your current location.
+
+                </div>
+
+                <div class="hint-card">
+
+                    Use ls to list files and folders.
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="challenge-side-panel">
+
+            <div class="side-card">
+
+                <h3>Challenge Progress</h3>
+
+                <div class="progress-bar">
+
+                    <div class="progress-fill"></div>
+
+                </div>
+
+                <p>25% Completed</p>
+
+            </div>
+
+            <div class="side-card">
+
+                <h3>Rewards</h3>
+
+                <div class="reward-box">
+                    +100 XP
+                </div>
+
+                <div class="reward-box">
+                    Linux Beginner Badge
+                </div>
+
+            </div>
+
+            <div class="side-card">
+
+                <h3>Launch Terminal</h3>
+
+                <a href="#" class="launch-btn">
+                    Open Terminal
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

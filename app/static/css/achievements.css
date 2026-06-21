@@ -1,0 +1,182 @@
+.achievements-page{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:24px;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.achievement-stats{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:20px;
+}
+
+.achievement-stat-card{
+
+    background:
+    rgba(9,19,33,.72);
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+    border-radius:20px;
+
+    padding:24px;
+}
+
+.achievement-stat-card h2{
+
+    color:#24f2a5;
+
+    margin-bottom:8px;
+}
+
+.achievement-stat-card p{
+
+    color:#98a6ba;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.achievement-progress-card{
+
+    background:
+    rgba(9,19,33,.72);
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+    border-radius:20px;
+
+    padding:24px;
+}
+
+.progress-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:14px;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.achievement-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fill,minmax(260px,1fr));
+
+    gap:20px;
+}
+
+.achievement-card{
+
+    background:
+    rgba(9,19,33,.72);
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+    border-radius:18px;
+
+    padding:22px;
+
+    transition:.25s ease;
+}
+
+.achievement-card:hover{
+
+    transform:
+    translateY(-4px);
+}
+
+.achievement-icon{
+
+    width:60px;
+    height:60px;
+
+    border-radius:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:26px;
+
+    margin-bottom:18px;
+}
+
+.unlocked .achievement-icon{
+
+    background:
+    rgba(36,242,165,.10);
+
+    border:
+    1px solid rgba(36,242,165,.15);
+}
+
+.locked{
+
+    opacity:.6;
+}
+
+.locked .achievement-icon{
+
+    background:
+    rgba(255,255,255,.04);
+}
+
+.achievement-card h4{
+
+    margin-bottom:10px;
+}
+
+.achievement-card p{
+
+    color:#98a6ba;
+
+    line-height:1.7;
+}
+
+.achievement-section h3{
+
+    margin-bottom:18px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1000px){
+
+    .achievement-stats{
+
+        grid-template-columns:
+        repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+
+    .achievement-stats{
+
+        grid-template-columns:
+        1fr;
+    }
+}

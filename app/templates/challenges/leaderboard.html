@@ -1,0 +1,154 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Leaderboard
+{% endblock %}
+
+{% block page_title %}
+Leaderboard
+{% endblock %}
+
+{% block content %}
+
+<section class="leaderboard-page">
+
+    <!-- USER POSITION -->
+
+    <div class="user-rank-card">
+
+        <div>
+
+            <h3>Your Ranking</h3>
+
+            <p>Keep solving challenges to climb higher.</p>
+
+        </div>
+
+        <div class="rank-badge">
+            #12
+        </div>
+
+    </div>
+
+    <!-- TOP 3 -->
+
+    <div class="podium-section">
+
+        <div class="podium-card second">
+
+            <div class="podium-avatar">
+                RS
+            </div>
+
+            <h3>Rahul</h3>
+
+            <p>4250 XP</p>
+
+            <span>#2</span>
+
+        </div>
+
+        <div class="podium-card first">
+
+            <div class="podium-avatar">
+                AK
+            </div>
+
+            <h3>Aman</h3>
+
+            <p>5100 XP</p>
+
+            <span>#1</span>
+
+        </div>
+
+        <div class="podium-card third">
+
+            <div class="podium-avatar">
+                SK
+            </div>
+
+            <h3>Saurabh</h3>
+
+            <p>3980 XP</p>
+
+            <span>#3</span>
+
+        </div>
+
+    </div>
+
+    <!-- SEARCH -->
+
+    <div class="leaderboard-search">
+
+        <input
+            type="text"
+            placeholder="Search User..."
+        >
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="leaderboard-table-card">
+
+        <table class="leaderboard-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th>XP</th>
+                    <th>Challenges</th>
+                    <th>Streak</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>#4</td>
+                    <td>Rohit</td>
+                    <td>3650</td>
+                    <td>42</td>
+                    <td>12 Days</td>
+                </tr>
+
+                <tr>
+                    <td>#5</td>
+                    <td>Priya</td>
+                    <td>3400</td>
+                    <td>39</td>
+                    <td>10 Days</td>
+                </tr>
+
+                <tr>
+                    <td>#6</td>
+                    <td>Karan</td>
+                    <td>3280</td>
+                    <td>36</td>
+                    <td>8 Days</td>
+                </tr>
+
+                <tr>
+                    <td>#12</td>
+                    <td>You</td>
+                    <td>1240</td>
+                    <td>18</td>
+                    <td>8 Days</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endblock %}

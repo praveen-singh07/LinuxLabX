@@ -1,0 +1,208 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Terminal
+{% endblock %}
+
+{% block page_title %}
+Linux Terminal Lab
+{% endblock %}
+
+{% block content %}
+
+<section class="terminal-page">
+
+    <!-- TOP STATUS -->
+
+    <div class="terminal-status-bar">
+
+        <div class="status-chip active">
+
+            🟢 Connected
+
+        </div>
+
+        <div class="status-chip">
+
+            Ubuntu 24.04
+
+        </div>
+
+        <div class="status-chip">
+
+            Beginner Lab
+
+        </div>
+
+    </div>
+
+
+    <div class="terminal-layout">
+
+        <!-- LEFT PANEL -->
+
+        <div class="challenge-panel">
+
+            <div class="panel-card">
+
+                <span class="challenge-tag">
+
+                    EASY • +100 XP
+
+                </span>
+
+                <h2>
+
+                    Linux Navigation Basics
+
+                </h2>
+
+                <p>
+
+                    Learn pwd, ls and cd commands
+                    by completing these tasks.
+
+                </p>
+
+                <div class="task-list">
+
+                    <div class="task completed">
+
+                        ✓ Print current directory
+
+                    </div>
+
+                    <div class="task">
+
+                        ○ List all files
+
+                    </div>
+
+                    <div class="task">
+
+                        ○ Change directory
+
+                    </div>
+
+                    <div class="task">
+
+                        ○ Return home
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel-card">
+
+                <h3>
+
+                    Recent Commands
+
+                </h3>
+
+                <div class="command-list">
+
+                    <span>pwd</span>
+
+                    <span>ls -la</span>
+
+                    <span>cd Documents</span>
+
+                    <span>whoami</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TERMINAL -->
+
+        <div class="terminal-window">
+
+            <div class="terminal-header">
+
+                <div class="terminal-dots">
+
+                    <span class="red"></span>
+
+                    <span class="yellow"></span>
+
+                    <span class="green"></span>
+
+                </div>
+
+                <div class="terminal-title">
+
+                    user@linuxlabx: ~
+
+                </div>
+
+            </div>
+
+
+            <div class="terminal-body">
+
+<pre>
+
+user@linuxlabx:~$ pwd
+
+/home/user
+
+
+user@linuxlabx:~$ ls
+
+Documents
+
+Downloads
+
+Projects
+
+
+user@linuxlabx:~$ whoami
+
+linuxlabx
+
+
+user@linuxlabx:~$
+
+<span class="cursor"></span>
+
+</pre>
+
+            </div>
+
+
+            <div class="terminal-input-box">
+
+                <span>
+
+                    user@linuxlabx:~$
+
+                </span>
+
+                <input
+                type="text"
+                placeholder="Enter command..."
+                >
+
+                <button>
+
+                    Run
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

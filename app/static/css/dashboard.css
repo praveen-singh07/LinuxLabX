@@ -1,0 +1,549 @@
+/* =========================
+   DASHBOARD CONTENT
+========================= */
+
+.dashboard-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+}
+
+
+/* =========================
+   WELCOME BANNER
+========================= */
+
+.welcome-banner{
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 280px;
+
+    gap:30px;
+
+    padding:36px;
+
+    border-radius:28px;
+
+    background:
+    linear-gradient(
+    135deg,
+    rgba(10,18,34,.95),
+    rgba(18,28,52,.92)
+    );
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+.welcome-tag{
+
+    display:inline-flex;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:
+    rgba(36,242,165,.08);
+
+    color:#24f2a5;
+
+    font-size:13px;
+
+    margin-bottom:20px;
+}
+
+.welcome-banner h1{
+
+    font-size:44px;
+
+    font-weight:800;
+
+    line-height:1.15;
+
+    max-width:620px;
+}
+
+.welcome-banner p{
+
+    margin-top:18px;
+
+    color:#98a6ba;
+
+    line-height:1.8;
+
+    max-width:520px;
+}
+
+.banner-buttons{
+
+    display:flex;
+
+    gap:14px;
+
+    margin-top:28px;
+}
+
+.primary-btn,
+.secondary-btn{
+
+    height:48px;
+
+    padding:0 22px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:14px;
+
+    font-size:14px;
+
+    font-weight:700;
+}
+
+.primary-btn{
+
+    background:
+    linear-gradient(
+    135deg,
+    #24f2a5,
+    #00d9ff
+    );
+
+    color:#04111d;
+}
+
+.secondary-btn{
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+    background:
+    rgba(255,255,255,.03);
+
+    color:white;
+}
+
+
+/* =========================
+   XP CIRCLE
+========================= */
+
+.welcome-right{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.xp-circle{
+
+    width:190px;
+    height:190px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:
+    12px solid rgba(36,242,165,.18);
+
+    background:
+    radial-gradient(
+    circle,
+    rgba(36,242,165,.08),
+    transparent
+    );
+}
+
+.xp-circle h2{
+
+    font-size:48px;
+
+    color:#24f2a5;
+
+    margin-bottom:6px;
+}
+
+.xp-circle span{
+
+    color:#98a6ba;
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:20px;
+}
+
+.stat-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:24px;
+
+    border-radius:22px;
+
+    background:
+    rgba(9,19,33,.72);
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+    backdrop-filter:blur(10px);
+
+    transition:.25s ease;
+}
+
+.stat-card:hover{
+
+    transform:
+    translateY(-4px);
+
+    border-color:
+    rgba(36,242,165,.18);
+}
+
+.stat-icon{
+
+    width:58px;
+    height:58px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+    rgba(36,242,165,.08);
+
+    color:#24f2a5;
+
+    font-size:20px;
+}
+
+.stat-card h2{
+
+    font-size:30px;
+
+    margin-bottom:6px;
+}
+
+.stat-card p{
+
+    color:#98a6ba;
+
+    font-size:14px;
+}
+
+
+/* =========================
+   ROW
+========================= */
+
+.dashboard-row{
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:20px;
+}
+
+
+/* =========================
+   COMMON CARD
+========================= */
+
+.dashboard-card{
+
+    background:
+    rgba(9,19,33,.72);
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+    border-radius:24px;
+
+    padding:26px;
+
+    backdrop-filter:blur(10px);
+
+    transition:.25s ease;
+}
+
+.dashboard-card:hover{
+
+    border-color:
+    rgba(36,242,165,.15);
+}
+
+.dashboard-card h3{
+
+    font-size:22px;
+
+    margin-bottom:24px;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:10px;
+}
+
+.progress-bar{
+
+    width:100%;
+
+    height:10px;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+    background:
+    rgba(255,255,255,.05);
+}
+
+.progress-fill{
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+    linear-gradient(
+    90deg,
+    #24f2a5,
+    #00d9ff
+    );
+}
+
+.skill-list{
+
+    margin-top:24px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.skill{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:#d5dce5;
+}
+
+.skill span{
+
+    color:#24f2a5;
+}
+
+
+/* =========================
+   ACTIVITY
+========================= */
+
+.activity-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+}
+
+.activity-item{
+
+    display:flex;
+
+    gap:14px;
+}
+
+.activity-icon{
+
+    width:42px;
+    height:42px;
+
+    border-radius:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+    rgba(36,242,165,.08);
+
+    color:#24f2a5;
+}
+
+.activity-item p{
+
+    color:#98a6ba;
+
+    margin-top:4px;
+
+    font-size:13px;
+}
+
+
+/* =========================
+   LABS
+========================= */
+
+.lab-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+}
+
+.lab-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:16px;
+
+    border-radius:16px;
+
+    background:
+    rgba(255,255,255,.03);
+}
+
+.lab-tag{
+
+    padding:6px 12px;
+
+    border-radius:999px;
+
+    background:
+    rgba(36,242,165,.08);
+
+    color:#24f2a5;
+
+    font-size:12px;
+}
+
+
+/* =========================
+   ACHIEVEMENTS
+========================= */
+
+.achievement-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+}
+
+.achievement-item{
+
+    padding:16px;
+
+    border-radius:16px;
+
+    background:
+    rgba(255,255,255,.03);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1200px){
+
+    .stats-grid{
+
+        grid-template-columns:
+        repeat(2,1fr);
+    }
+
+    .dashboard-row{
+
+        grid-template-columns:
+        1fr;
+    }
+
+    .welcome-banner{
+
+        grid-template-columns:
+        1fr;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .stats-grid{
+
+        grid-template-columns:
+        1fr;
+    }
+
+    .welcome-banner h1{
+
+        font-size:34px;
+    }
+
+}

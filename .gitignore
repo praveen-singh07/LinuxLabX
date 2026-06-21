@@ -1,0 +1,80 @@
+# Virtual Environment
+
+venv/
+env/
+ENV/
+
+# Python
+
+**pycache**/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Environment Variables
+
+.env
+
+# Database
+
+*.db
+*.sqlite3
+
+# IDE
+
+.vscode/
+.idea/
+
+# OS Files
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+
+# Pytest
+
+.pytest_cache/
+
+# Coverage
+
+.coverage
+htmlcov/
+
+# Mypy
+
+.mypy_cache/
+
+# Build
+
+build/
+dist/
+*.egg-info/
+
+# Uploaded Files
+
+app/static/uploads/
+
+# Temporary Files
+
+tmp/
+temp/
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# PyCharm
+
+*.iml
+
+# SQLite Journal Files
+
+*.db-journal
+
+# VS Code Workspace
+
+*.code-workspace

@@ -1,0 +1,186 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Achievements
+{% endblock %}
+
+{% block page_title %}
+Achievements & Badges
+{% endblock %}
+
+{% block content %}
+
+<section class="achievements-page">
+
+    <!-- STATS -->
+
+    <div class="achievement-stats">
+
+        <div class="achievement-stat-card">
+
+            <h2>18</h2>
+
+            <p>Unlocked Achievements</p>
+
+        </div>
+
+        <div class="achievement-stat-card">
+
+            <h2>42</h2>
+
+            <p>Total Achievements</p>
+
+        </div>
+
+        <div class="achievement-stat-card">
+
+            <h2>43%</h2>
+
+            <p>Completion Rate</p>
+
+        </div>
+
+        <div class="achievement-stat-card">
+
+            <h2>1250 XP</h2>
+
+            <p>Achievement XP</p>
+
+        </div>
+
+    </div>
+
+    <!-- PROGRESS -->
+
+    <div class="achievement-progress-card">
+
+        <div class="progress-header">
+
+            <h3>Overall Achievement Progress</h3>
+
+            <span>43%</span>
+
+        </div>
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                style="width:43%;"
+            ></div>
+
+        </div>
+
+    </div>
+
+    <!-- UNLOCKED -->
+
+    <div class="achievement-section">
+
+        <h3>Unlocked Achievements</h3>
+
+        <div class="achievement-grid">
+
+            <div class="achievement-card unlocked">
+
+                <div class="achievement-icon">
+                    🏆
+                </div>
+
+                <h4>First Challenge</h4>
+
+                <p>
+                    Complete your first challenge.
+                </p>
+
+            </div>
+
+            <div class="achievement-card unlocked">
+
+                <div class="achievement-icon">
+                    ⚡
+                </div>
+
+                <h4>100 XP Earned</h4>
+
+                <p>
+                    Reach 100 XP milestone.
+                </p>
+
+            </div>
+
+            <div class="achievement-card unlocked">
+
+                <div class="achievement-icon">
+                    🔥
+                </div>
+
+                <h4>7 Day Streak</h4>
+
+                <p>
+                    Learn continuously for 7 days.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LOCKED -->
+
+    <div class="achievement-section">
+
+        <h3>Locked Achievements</h3>
+
+        <div class="achievement-grid">
+
+            <div class="achievement-card locked">
+
+                <div class="achievement-icon">
+                    🔒
+                </div>
+
+                <h4>Linux Master</h4>
+
+                <p>
+                    Complete all beginner challenges.
+                </p>
+
+            </div>
+
+            <div class="achievement-card locked">
+
+                <div class="achievement-icon">
+                    🔒
+                </div>
+
+                <h4>5000 XP</h4>
+
+                <p>
+                    Reach 5000 XP milestone.
+                </p>
+
+            </div>
+
+            <div class="achievement-card locked">
+
+                <div class="achievement-icon">
+                    🔒
+                </div>
+
+                <h4>30 Day Streak</h4>
+
+                <p>
+                    Learn continuously for 30 days.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

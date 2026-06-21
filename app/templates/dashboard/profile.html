@@ -1,0 +1,178 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block page_title %}
+My Profile
+{% endblock %}
+
+{% block content %}
+
+<section class="profile-page">
+
+    <!-- PROFILE HEADER -->
+
+    <div class="profile-header-card">
+
+        <div class="profile-left">
+
+            <div class="profile-avatar-large">
+                GS
+            </div>
+
+            <div>
+
+                <h2>Gaurav Singh</h2>
+
+                <p>Linux Learner • Beginner Track</p>
+
+                <div class="profile-badges">
+
+                    <span>🏆 Explorer</span>
+
+                    <span>🔥 8 Day Streak</span>
+
+                    <span>⚡ 1240 XP</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <button class="edit-profile-btn">
+
+            Edit Profile
+
+        </button>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="profile-stats-grid">
+
+        <div class="profile-stat-card">
+
+            <h3>1240</h3>
+
+            <p>Total XP</p>
+
+        </div>
+
+        <div class="profile-stat-card">
+
+            <h3>18</h3>
+
+            <p>Challenges Completed</p>
+
+        </div>
+
+        <div class="profile-stat-card">
+
+            <h3>12</h3>
+
+            <p>Labs Completed</p>
+
+        </div>
+
+        <div class="profile-stat-card">
+
+            <h3>8 Days</h3>
+
+            <p>Current Streak</p>
+
+        </div>
+
+    </div>
+
+    <!-- CONTENT -->
+
+    <div class="profile-content-grid">
+
+        <div class="profile-card">
+
+            <h3>About</h3>
+
+            <p>
+                Passionate Linux learner focused on
+                command line skills, scripting and
+                future DevOps technologies.
+            </p>
+
+        </div>
+
+        <div class="profile-card">
+
+            <h3>Learning Progress</h3>
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    style="width:68%;"
+                ></div>
+
+            </div>
+
+            <p class="progress-text">
+                Beginner Track - 68% Complete
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+
+    <div class="profile-card">
+
+        <h3>Recent Activity</h3>
+
+        <div class="activity-list">
+
+            <div class="activity-item">
+
+                <div class="activity-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <h4>
+                        Completed Linux Navigation Basics
+                    </h4>
+
+                    <p>2 hours ago</p>
+
+                </div>
+
+            </div>
+
+            <div class="activity-item">
+
+                <div class="activity-icon">
+                    🏆
+                </div>
+
+                <div>
+
+                    <h4>
+                        Earned Explorer Achievement
+                    </h4>
+
+                    <p>Yesterday</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
