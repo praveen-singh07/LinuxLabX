@@ -6,11 +6,22 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.api.api_router import router
+from app.api.routes.auth import router as auth_router
+
+from app.core.database import Base
+from app.core.database import engine
+
+from app.models.user import User
+
+
 
 app = FastAPI(
     title="LinuxLabX",
     version="1.0.0"
 )
+
+Base.metadata.create_all(bind=engine)
+app.include_router(auth_router)
 
 app.include_router(router)
 
