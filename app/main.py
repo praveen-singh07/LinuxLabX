@@ -21,6 +21,9 @@ from app.api.routes.challenges import (
     router as challenge_router
 )
 
+from app.api.routes.dashboard import (
+    router as dashboard_router
+)
 
 
 app = FastAPI(
@@ -34,6 +37,7 @@ app.include_router(profile_router)
 app.include_router(challenge_router)
 
 app.include_router(router)
+app.include_router(dashboard_router)
 
 app.mount(
     "/static",
