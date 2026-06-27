@@ -17,6 +17,11 @@ from app.api.routes.profile import (
     router as profile_router
 )
 
+from app.api.routes.challenges import (
+    router as challenge_router
+)
+
+
 
 app = FastAPI(
     title="LinuxLabX",
@@ -26,6 +31,7 @@ app = FastAPI(
 Base.metadata.create_all(bind=engine)
 app.include_router(auth_router)
 app.include_router(profile_router)
+app.include_router(challenge_router)
 
 app.include_router(router)
 
