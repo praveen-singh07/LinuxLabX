@@ -97,7 +97,7 @@ def authenticate_user(
 
         password,
 
-        user.hashed_password
+        user.hashed_password # type: ignore
 
     ):
 
