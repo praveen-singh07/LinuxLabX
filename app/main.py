@@ -25,6 +25,10 @@ from app.api.routes.dashboard import (
     router as dashboard_router
 )
 
+from app.api.routes.leaderboard import (
+    router as leaderboard_router
+)
+
 
 app = FastAPI(
     title="LinuxLabX",
@@ -38,6 +42,8 @@ app.include_router(challenge_router)
 
 app.include_router(router)
 app.include_router(dashboard_router)
+app.include_router(leaderboard_router)
+
 
 app.mount(
     "/static",
