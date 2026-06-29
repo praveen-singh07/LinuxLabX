@@ -30,6 +30,9 @@ from app.api.dependencies.auth_dependencies import (
     get_current_user
 )
 
+from app.services.achievement_service import (
+    check_achievements
+)
 
 router = APIRouter(
     prefix="/challenges",
@@ -88,6 +91,8 @@ def get_single_challenge(
 @router.post(
     "/complete/{challenge_id}"
 )
+
+
 def complete_challenge(
     challenge_id: int,
     db: Session = Depends(get_db),
@@ -142,6 +147,11 @@ def complete_challenge(
         db,
         current_user,
         xp_reward
+    )
+
+    check_achievements(
+    db,
+    current_user
     )
 
     db.commit()
