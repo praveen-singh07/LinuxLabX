@@ -1,8 +1,13 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-DATABASE_URL = "sqlite:///./linuxlabx.db"
+# Load environment variables from .env
+load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./linuxlabx.db")
 
 engine = create_engine(
     DATABASE_URL,
