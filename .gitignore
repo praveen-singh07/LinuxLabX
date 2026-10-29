@@ -11,7 +11,5 @@ __pycache__/
 .vscode/
 .idea/
 *.py[cod]
-chk.py
 pathlist.py
-xp_isolated_check.py
 *.ps1

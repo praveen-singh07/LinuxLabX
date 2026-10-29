@@ -2,14 +2,18 @@ from fastapi import FastAPI
 
 from app.api.routes.admin_learning_paths import router as admin_learning_paths_router
 from app.api.routes.admin_lessons import router as admin_lessons_router
+from app.api.routes.admin_quizzes import router as admin_quizzes_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.dashboard import router as dashboard_router
 from app.api.routes.learning_paths import router as learning_paths_router
 from app.api.routes.lesson_completion import router as lesson_completion_router
 from app.api.routes.lessons import router as lessons_router
+from app.api.routes.quizzes import router as quizzes_router
 from app.core.database import Base, engine
 from app.models.learning_path import LearningPath  # noqa: F401
 from app.models.lesson_completion import LessonCompletion  # noqa: F401
+from app.models.quiz import Quiz, QuizQuestion  # noqa: F401
+from app.models.quiz_attempt import QuizAttempt  # noqa: F401
 from app.models.topic import Topic, TopicLesson  # noqa: F401
 
 app = FastAPI(
@@ -26,6 +30,8 @@ app.include_router(admin_lessons_router)
 app.include_router(learning_paths_router)
 app.include_router(admin_learning_paths_router)
 app.include_router(lesson_completion_router)
+app.include_router(quizzes_router)
+app.include_router(admin_quizzes_router)
 
 
 @app.get("/")
