@@ -27,6 +27,7 @@ from app.core.security import create_access_token, hash_password
 from app.models.learning_path import LearningPath  # noqa: F401
 from app.models.lesson import Lesson  # noqa: F401
 from app.models.lesson_completion import LessonCompletion  # noqa: F401
+from app.models.practice import PracticeAttempt, PracticeExercise  # noqa: F401
 from app.models.progress import UserProgress  # noqa: F401
 from app.models.quiz import Quiz, QuizQuestion  # noqa: F401
 from app.models.quiz_attempt import QuizAttempt  # noqa: F401
