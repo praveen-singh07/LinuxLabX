@@ -24,6 +24,7 @@ from sqlalchemy.pool import NullPool
 
 from app.core.database import Base, get_db
 from app.core.security import create_access_token, hash_password
+from app.models.challenge import Challenge, ChallengeAttempt  # noqa: F401
 from app.models.learning_path import LearningPath  # noqa: F401
 from app.models.lesson import Lesson  # noqa: F401
 from app.models.lesson_completion import LessonCompletion  # noqa: F401
