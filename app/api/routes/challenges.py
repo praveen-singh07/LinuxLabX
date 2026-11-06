@@ -31,7 +31,7 @@ def challenge_detail(challenge_id: int, db: Session = Depends(get_db)):
 @router.post("/{challenge_id}/attempts", response_model=ChallengeResult)
 def submit_answer(challenge_id: int, data: ChallengeAnswerSubmit, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
-        attempt, xp_awarded, xp, progress = submit_challenge_answer(db, current_user.id, challenge_id, data.answer)
+        attempt, xp_awarded, xp, progress, newly_unlocked = submit_challenge_answer(db, current_user.id, challenge_id, data.answer)
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from None
     return ChallengeResult(
@@ -39,4 +39,5 @@ def submit_answer(challenge_id: int, data: ChallengeAnswerSubmit, db: Session = 
         feedback="Challenge completed!" if attempt.is_correct else "Not quite. Review the scenario and hints, then try again.",
         xp_awarded=xp_awarded, total_xp=xp.total_xp, level=xp.level,
         challenges_completed=progress.challenges_completed, submitted_at=attempt.submitted_at,
+        newly_unlocked=newly_unlocked,
     )

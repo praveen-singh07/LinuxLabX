@@ -27,7 +27,7 @@ def complete_lesson(
     current_user: User = Depends(get_current_user),
 ) -> LessonCompletionResponse:
     try:
-        completion, already_completed, xp_awarded, progress, xp = (
+        completion, already_completed, xp_awarded, progress, xp, newly_unlocked = (
             complete_published_lesson(db, current_user.id, lesson_id)
         )
     except LookupError:
@@ -42,6 +42,7 @@ def complete_lesson(
         level=xp.level,
         lessons_completed=progress.lessons_completed,
         progress_percentage=progress.progress_percentage,
+        newly_unlocked=newly_unlocked,
     )
 
 

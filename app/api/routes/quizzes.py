@@ -52,7 +52,7 @@ def attempt_quiz(
     current_user: User = Depends(get_current_user),
 ):
     try:
-        attempt, passed, xp_awarded, user_xp, progress = submit_quiz(
+        attempt, passed, xp_awarded, user_xp, progress, newly_unlocked = submit_quiz(
             db, current_user.id, quiz_id, data.answers
         )
     except LookupError as exc:
@@ -71,6 +71,7 @@ def attempt_quiz(
         level=user_xp.level,
         quizzes_completed=progress.quizzes_completed if progress else 0,
         submitted_at=attempt.submitted_at,
+        newly_unlocked=newly_unlocked,
     )
 
 

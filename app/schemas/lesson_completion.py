@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.schemas.achievement import AchievementState
 
 
 class LessonCompletionResponse(BaseModel):
@@ -13,6 +15,7 @@ class LessonCompletionResponse(BaseModel):
     level: int
     lessons_completed: int
     progress_percentage: int
+    newly_unlocked: list[AchievementState] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

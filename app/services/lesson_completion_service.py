@@ -6,6 +6,7 @@ from app.models.lesson_completion import LessonCompletion
 from app.models.progress import UserProgress
 from app.models.xp import UserXP
 from app.services.progress_service import create_user_progress, get_user_progress
+from app.services.achievement_service import evaluate_user_achievements
 from app.services.xp_service import award_activity_xp, get_user_xp
 
 
@@ -77,6 +78,8 @@ def complete_published_lesson(
         else 0
     )
 
+    newly_unlocked = evaluate_user_achievements(db, user_id)
+
     db.commit()
     db.refresh(progress)
     db.refresh(xp)
@@ -84,4 +87,4 @@ def complete_published_lesson(
         completion = existing
     else:
         db.refresh(completion)
-    return completion, already_completed, xp_awarded, progress, xp
+    return completion, already_completed, xp_awarded, progress, xp, newly_unlocked

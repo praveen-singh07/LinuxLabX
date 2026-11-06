@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -7,8 +7,8 @@ from app.models.user import User
 from app.schemas.dashboard import DashboardResponse
 from app.schemas.progress import ProgressResponse
 from app.schemas.xp import XPResponse
-from app.services.progress_service import get_user_progress
-from app.services.xp_service import get_user_xp
+from app.services.progress_service import create_user_progress, get_user_progress
+from app.services.xp_service import create_user_xp, get_user_xp
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -18,14 +18,16 @@ def get_dashboard(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     progress = get_user_progress(db, current_user.id)
+    if progress is None:
+        progress = create_user_progress(db, current_user.id)
 
     xp = get_user_xp(db, current_user.id)
-
     if xp is None:
-        raise HTTPException(status_code=404, detail="User XP not found")
+        xp = create_user_xp(db, current_user.id)
 
-    if progress is None:
-        raise HTTPException(status_code=404, detail="User progress not found")
+    db.commit()
+    db.refresh(progress)
+    db.refresh(xp)
 
     return DashboardResponse(
         user_id=current_user.id,

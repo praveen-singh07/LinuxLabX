@@ -212,7 +212,7 @@ The system is intended to:
 - Record achievement unlocks.
 - Optionally award XP for achievements.
 
-Exact achievement conditions and catalog are **TBD until implemented**.
+The initial 12-badge catalog is implemented with SVG artwork and per-user unlock records. It covers lesson milestones, correct practice and challenge completions, quiz attempts, XP thresholds, and a perfect quiz score. The authenticated `GET /achievements/me` endpoint returns locked and unlocked badges with criteria and icon paths. Activity submission responses include any newly unlocked badges.
 
 ### 6.10 Learning Progress Tracking
 
@@ -918,7 +918,7 @@ Current verified authentication capabilities:
 7. Learning, practice, quiz, challenge, gamification, progress, leaderboard, and admin features are not yet complete.
 8. Database migrations are not yet implemented.
 9. Exact production deployment architecture is not finalized.
-10. Exact XP/level/achievement rules are not finalized.
+10. Achievement rules for the initial badge catalog are implemented; XP balancing and future achievement additions may still change.
 
 ---
 

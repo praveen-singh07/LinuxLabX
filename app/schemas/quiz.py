@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.schemas.achievement import AchievementState
+
 Difficulty = Literal["beginner", "intermediate", "advanced"]
 
 
@@ -99,6 +101,7 @@ class QuizResult(BaseModel):
     level: int
     quizzes_completed: int
     submitted_at: datetime
+    newly_unlocked: list[AchievementState] = Field(default_factory=list)
 
 
 class QuizAttemptHistoryItem(BaseModel):

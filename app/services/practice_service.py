@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.practice import PracticeAttempt, PracticeExercise
 from app.services.progress_service import create_user_progress, get_user_progress
 from app.services.xp_service import award_activity_xp, create_user_xp, get_user_xp
+from app.services.achievement_service import evaluate_user_achievements
 
 
 def normalize_answer(value: str) -> str:
@@ -129,11 +130,13 @@ def submit_practice_answer(db: Session, user_id: int, exercise_id: int, answer: 
         progress.last_activity = f"Completed practice: {exercise.title}"
         progress.last_activity_at = func.now()
 
+    newly_unlocked = evaluate_user_achievements(db, user_id)
+
     db.commit()
     db.refresh(attempt)
     db.refresh(xp)
     db.refresh(progress)
-    return attempt, xp_awarded, xp, progress
+    return attempt, xp_awarded, xp, progress, newly_unlocked
 
 
 def list_user_practice_attempts(db: Session, user_id: int):
