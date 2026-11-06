@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.schemas.achievement import AchievementState
+
 Difficulty = Literal["beginner", "intermediate", "advanced"]
 
 
@@ -54,6 +56,7 @@ class PracticeResult(BaseModel):
     level: int
     practice_completed: int
     submitted_at: datetime
+    newly_unlocked: list[AchievementState] = Field(default_factory=list)
 
 
 class PracticeHistoryItem(BaseModel):

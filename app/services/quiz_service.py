@@ -6,6 +6,7 @@ from app.models.quiz import Quiz, QuizQuestion
 from app.models.quiz_attempt import QuizAttempt
 from app.models.xp_event import XPEvent
 from app.services.xp_service import award_activity_xp, get_user_xp
+from app.services.achievement_service import evaluate_user_achievements
 
 PASS_PERCENTAGE = 60
 
@@ -181,11 +182,13 @@ def submit_quiz(db: Session, user_id: int, quiz_id: int, submitted_answers):
 
         user_xp = create_user_xp(db, user_id)
 
+    newly_unlocked = evaluate_user_achievements(db, user_id)
+
     db.commit()
     db.refresh(attempt)
     db.refresh(user_xp)
     progress = db.scalar(select(UserProgress).where(UserProgress.user_id == user_id))
-    return attempt, passed, xp_awarded, user_xp, progress
+    return attempt, passed, xp_awarded, user_xp, progress, newly_unlocked
 
 
 def list_user_attempts(db: Session, user_id: int) -> list[QuizAttempt]:

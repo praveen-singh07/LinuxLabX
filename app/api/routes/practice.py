@@ -50,7 +50,7 @@ def submit_answer(
     current_user: User = Depends(get_current_user),
 ):
     try:
-        attempt, xp_awarded, xp, progress = submit_practice_answer(
+        attempt, xp_awarded, xp, progress, newly_unlocked = submit_practice_answer(
             db, current_user.id, exercise_id, data.answer
         )
     except LookupError as exc:
@@ -67,4 +67,5 @@ def submit_answer(
         level=xp.level,
         practice_completed=progress.practice_completed,
         submitted_at=attempt.submitted_at,
+        newly_unlocked=newly_unlocked,
     )

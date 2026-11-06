@@ -7,6 +7,7 @@ from app.models.challenge import Challenge, ChallengeAttempt
 from app.models.progress import UserProgress
 from app.services.progress_service import create_user_progress, get_user_progress
 from app.services.xp_service import award_activity_xp, create_user_xp, get_user_xp
+from app.services.achievement_service import evaluate_user_achievements
 
 
 def normalize_answer(value: str) -> str:
@@ -90,11 +91,13 @@ def submit_challenge_answer(db: Session, user_id: int, challenge_id: int, answer
         progress.last_activity = f"Completed challenge: {challenge.title}"
         progress.last_activity_at = func.now()
 
+    newly_unlocked = evaluate_user_achievements(db, user_id)
+
     db.commit()
     db.refresh(attempt)
     db.refresh(xp)
     db.refresh(progress)
-    return attempt, xp_awarded, xp, progress
+    return attempt, xp_awarded, xp, progress, newly_unlocked
 
 
 def list_user_challenge_attempts(db: Session, user_id: int):

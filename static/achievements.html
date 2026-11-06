@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1220">
+    <title>Student Dashboard · LinuxLabX</title>
+    <link rel="stylesheet" href="/static/css/achievements.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="LinuxLabX home">
+          <span class="brand-mark">L<span>×</span></span>
+          <span>LinuxLab<span class="brand-accent">X</span></span>
+        </a>
+        <span class="topbar-note">LEARN · PRACTICE · ACHIEVE</span>
+      </header>
+
+      <section class="hero">
+        <div>
+          <p class="eyebrow">YOUR LINUX LEARNING SPACE</p>
+          <h1>Student Dashboard</h1>
+          <p class="hero-copy">Pick up where you left off, explore a learning path, and celebrate each milestone.</p>
+        </div>
+        <div class="collection-count" aria-live="polite">
+          <span id="unlocked-count">—</span>
+          <span>BADGES EARNED</span>
+        </div>
+      </section>
+
+      <section id="auth-panel" class="auth-panel" aria-labelledby="auth-title">
+        <div class="auth-copy">
+          <p class="eyebrow">YOUR COLLECTION</p>
+          <h2 id="auth-title">Sign in to see your badges</h2>
+          <p>Locked badges stay visible so you can see what to work toward next.</p>
+        </div>
+        <form id="auth-form" class="auth-form">
+          <label id="name-field" class="is-hidden">Name<input name="name" autocomplete="name" minlength="2"></label>
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+          <div class="auth-actions">
+            <button id="auth-submit" class="button button-primary" type="submit">Sign in</button>
+            <button id="auth-toggle" class="button button-quiet" type="button">Create account</button>
+          </div>
+          <p id="auth-message" class="form-message" role="status"></p>
+        </form>
+      </section>
+
+      <section id="dashboard-content" class="is-hidden">
+        <div class="welcome-row">
+          <div><p class="eyebrow">WELCOME BACK</p><h2 id="welcome-title">Your learning journey</h2></div>
+          <button id="logout-button" class="button button-quiet" type="button">Sign out</button>
+        </div>
+        <div class="stat-grid" aria-label="Learning summary">
+          <article class="stat-card"><span class="stat-icon xp-icon">✦</span><div><strong id="stat-xp">0 XP</strong><span id="stat-level">Level 1</span></div></article>
+          <article class="stat-card"><span class="stat-icon lesson-icon">⌘</span><div><strong id="stat-lessons">0</strong><span>Lessons completed</span></div></article>
+          <article class="stat-card"><span class="stat-icon practice-icon">✓</span><div><strong id="stat-practice">0</strong><span>Practice exercises</span></div></article>
+          <article class="stat-card"><span class="stat-icon quiz-icon">▤</span><div><strong id="stat-activities">0</strong><span>Quizzes &amp; challenges</span></div></article>
+        </div>
+        <section class="progress-panel" aria-labelledby="progress-title">
+          <div class="progress-copy"><div><p class="eyebrow">LESSON PROGRESS</p><h2 id="progress-title">Keep your momentum</h2></div><strong id="progress-label">0%</strong></div>
+          <div class="progress-track"><span id="progress-fill"></span></div>
+          <p id="last-activity" class="last-activity">Complete a lesson to start tracking your progress.</p>
+        </section>
+        <section class="paths-section" aria-labelledby="paths-title">
+          <div class="section-heading"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2 id="paths-title">Learning paths</h2></div><span id="path-count" class="muted-label"></span></div>
+          <div id="path-grid" class="path-grid"></div>
+          <p id="path-empty" class="empty-state is-hidden">There are no published learning paths yet. Check back soon.</p>
+        </section>
+        <section id="achievements" class="achievement-preview">
+          <div><p class="eyebrow">COLLECT YOUR MILESTONES</p><h2>My Achievements</h2><p id="achievement-summary" class="hero-copy">Your badges appear here as you learn.</p></div>
+          <a class="button button-primary" href="#collection">View all badges <span aria-hidden="true">→</span></a>
+        </section>
+      </section>
+
+      <section id="collection" class="collection is-hidden" aria-live="polite">
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">THE LINUXLABX BADGE SET</p>
+            <h2 id="collection-title">Your collection</h2>
+          </div>
+          <a class="button button-quiet" href="/app/dashboard">← Dashboard</a>
+        </div>
+        <div id="badge-grid" class="badge-grid"></div>
+      </section>
+      <p id="page-message" class="page-message" role="status"></p>
+      <footer>LinuxLabX <span>·</span> Keep learning. Your next badge is waiting.</footer>
+    </main>
+
+    <dialog id="lesson-dialog" class="lesson-dialog">
+      <button class="dialog-close lesson-close" type="button" aria-label="Close">×</button>
+      <div id="lesson-content"></div>
+      <div id="lesson-completion-result" class="lesson-result" role="status"></div>
+      <button id="complete-lesson-button" class="button button-primary" type="button">Mark lesson complete</button>
+    </dialog>
+    <dialog id="unlock-dialog" class="unlock-dialog">
+      <button class="dialog-close" type="button" aria-label="Close">×</button>
+      <div id="unlock-content"></div>
+    </dialog>
+    <script src="/static/js/achievements.js" defer></script>
+  </body>
+</html>
