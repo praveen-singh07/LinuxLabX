@@ -68,6 +68,18 @@
           <div id="path-grid" class="path-grid"></div>
           <p id="path-empty" class="empty-state is-hidden">There are no published learning paths yet. Check back soon.</p>
         </section>
+        <section class="quiz-section" aria-labelledby="quizzes-title">
+          <div class="section-heading">
+            <div><p class="eyebrow">CHECK YOUR LINUX KNOWLEDGE</p><h2 id="quizzes-title">Quizzes</h2></div>
+            <span id="quiz-count" class="muted-label"></span>
+          </div>
+          <div id="quiz-grid" class="quiz-grid"></div>
+          <p id="quiz-empty" class="empty-state is-hidden">No published quizzes yet. Check back soon.</p>
+          <div id="quiz-history" class="quiz-history is-hidden">
+            <h3>Recent attempts</h3>
+            <div id="quiz-history-list"></div>
+          </div>
+        </section>
         <section id="achievements" class="achievement-preview">
           <div><p class="eyebrow">COLLECT YOUR MILESTONES</p><h2>My Achievements</h2><p id="achievement-summary" class="hero-copy">Your badges appear here as you learn.</p></div>
           <a class="button button-primary" href="#collection">View all badges <span aria-hidden="true">→</span></a>
@@ -93,6 +105,11 @@
       <div id="lesson-content"></div>
       <div id="lesson-completion-result" class="lesson-result" role="status"></div>
       <button id="complete-lesson-button" class="button button-primary" type="button">Mark lesson complete</button>
+    </dialog>
+    <dialog id="quiz-dialog" class="quiz-dialog">
+      <button class="dialog-close quiz-close" type="button" aria-label="Close">×</button>
+      <div id="quiz-content"></div>
+      <p id="quiz-message" class="quiz-message" role="status"></p>
     </dialog>
     <dialog id="unlock-dialog" class="unlock-dialog">
       <button class="dialog-close" type="button" aria-label="Close">×</button>
