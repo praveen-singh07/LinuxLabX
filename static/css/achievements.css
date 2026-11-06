@@ -77,6 +77,37 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .section-heading .eyebrow { margin-bottom: 7px; }
 .muted-label { color: var(--muted); font-size: 11px; }
 .path-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.quiz-section { padding: 0 0 42px; }
+.quiz-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.quiz-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: linear-gradient(140deg, #151f30, #101725); }
+.quiz-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.difficulty-pill { padding: 5px 8px; border: 1px solid #355577; border-radius: 99px; color: #a8d6ff; background: #15314c77; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.question-count { color: var(--muted); font-size: 10px; }
+.quiz-card h3 { margin: 0 0 7px; font: 700 16px 'Space Grotesk', sans-serif; }
+.quiz-card > p { min-height: 36px; margin: 0 0 15px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.quiz-card .button { width: 100%; }
+.quiz-history { margin-top: 25px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: #111a29a8; }
+.quiz-history h3 { margin: 0 0 11px; font: 600 14px 'Space Grotesk', sans-serif; }
+.history-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); color: #c3d0e1; font-size: 10px; }
+.history-row strong { color: #a8d6ff; font-weight: 700; }
+.quiz-dialog { position: relative; width: min(700px, calc(100% - 30px)); max-height: min(88vh, 800px); overflow: auto; padding: 30px; border: 1px solid #5b4e83; border-radius: 18px; color: var(--text); background: #111b2b; box-shadow: 0 25px 90px #000a; }
+.quiz-dialog::backdrop { background: #030711c9; backdrop-filter: blur(5px); }
+.quiz-dialog h2 { margin: 0 36px 7px 0; font-size: 26px; }
+.quiz-intro { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.quiz-pass-note { margin: 12px 0 19px; color: #b8c8dd; font-size: 10px; }
+.quiz-question { margin: 0 0 16px; padding: 15px; border: 1px solid #29384d; border-radius: 12px; background: #0d1522; }
+.quiz-question legend { padding: 0 7px; color: #e3ecf8; font-size: 12px; font-weight: 600; line-height: 1.5; }
+.quiz-option { display: flex; align-items: center; gap: 9px; margin: 7px 0 0; padding: 9px 10px; border: 1px solid transparent; border-radius: 8px; color: #b6c5d8; cursor: pointer; font-size: 11px; }
+.quiz-option:hover { border-color: #314968; background: #17263a; }
+.quiz-option input { accent-color: #77b9ff; }
+.quiz-submit { margin-top: 2px; }
+.quiz-message { min-height: 20px; margin: 12px 0 0; color: #ff9f9f; font-size: 11px; }
+.quiz-result { padding: 20px; border: 1px solid #385743; border-radius: 13px; background: #13251f; text-align: center; }
+.quiz-result.is-failed { border-color: #765040; background: #2a1c1b; }
+.quiz-result .score { display: block; margin: 10px 0 4px; color: var(--gold); font: 700 40px 'Space Grotesk', sans-serif; }
+.quiz-result p { margin: 5px 0; color: #c6d2e1; font-size: 12px; }
+.quiz-result .result-badges { margin-top: 14px; color: #f1d28a; }
+.quiz-done { display: block; margin: 17px auto 0; }
 .path-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: linear-gradient(140deg, #151f30, #101725); }
 .path-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .path-index { color: #8dc8ff; font: 700 11px 'Space Grotesk', sans-serif; letter-spacing: .12em; }
@@ -149,9 +180,11 @@ footer span { padding: 0 4px; color: var(--gold); }
   .stat-card strong { font-size: 15px; }
   .stat-card div > span { font-size: 9px; }
   .path-grid { grid-template-columns: 1fr; }
+  .quiz-grid { grid-template-columns: 1fr; }
   .achievement-preview { align-items: start; flex-direction: column; padding: 19px; }
   .welcome-row h2 { font-size: 19px; }
   .lesson-dialog { padding: 24px 19px; }
+  .quiz-dialog { padding: 24px 19px; }
   .badge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .badge-card { min-height: 245px; padding: 15px 10px; }
   .badge-art-wrap { width: 112px; height: 112px; }

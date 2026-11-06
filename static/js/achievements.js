@@ -10,9 +10,13 @@ const pageMessage = document.querySelector('#page-message');
 const authToggle = document.querySelector('#auth-toggle');
 const nameField = document.querySelector('#name-field');
 const pathGrid = document.querySelector('#path-grid');
+const quizGrid = document.querySelector('#quiz-grid');
 const lessonDialog = document.querySelector('#lesson-dialog');
+const quizDialog = document.querySelector('#quiz-dialog');
 let registerMode = false;
 let currentLesson = null;
+let currentQuiz = null;
+let pendingQuizBadges = [];
 let completedLessonIds = new Set();
 
 function escapeHTML(value) {
@@ -81,6 +85,33 @@ document.querySelector('#logout-button').addEventListener('click', () => {
 document.querySelector('.dialog-close').addEventListener('click', () => document.querySelector('#unlock-dialog').close());
 document.querySelector('.lesson-close').addEventListener('click', () => lessonDialog.close());
 document.querySelector('#complete-lesson-button').addEventListener('click', completeCurrentLesson);
+document.querySelector('.quiz-close').addEventListener('click', closeQuizAndCelebrate);
+quizDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closeQuizAndCelebrate();
+});
+
+quizGrid.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-quiz-id]');
+  if (!button) return;
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Loading…';
+  try {
+    currentQuiz = await api(`/quizzes/${button.dataset.quizId}`);
+    showQuiz(currentQuiz);
+  } catch (error) {
+    pageMessage.textContent = error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+});
+
+quizDialog.addEventListener('submit', submitCurrentQuiz);
+quizDialog.addEventListener('click', (event) => {
+  if (event.target.closest('.quiz-done')) closeQuizAndCelebrate();
+});
 
 pathGrid.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-path-id]');
@@ -153,6 +184,101 @@ function renderPaths(paths) {
     </article>`).join('');
 }
 
+function renderQuizzes(quizzes, history) {
+  const attemptsByQuiz = new Map();
+  history.forEach((attempt) => {
+    if (!attemptsByQuiz.has(attempt.quiz_id)) attemptsByQuiz.set(attempt.quiz_id, attempt);
+  });
+  document.querySelector('#quiz-count').textContent = `${quizzes.length} ${quizzes.length === 1 ? 'quiz' : 'quizzes'}`;
+  document.querySelector('#quiz-empty').classList.toggle('is-hidden', quizzes.length > 0);
+  quizGrid.innerHTML = quizzes.map((quiz) => {
+    const attempt = attemptsByQuiz.get(quiz.id);
+    return `<article class="quiz-card">
+      <div class="quiz-card-top"><span class="difficulty-pill">${escapeHTML(quiz.difficulty)}</span><span class="question-count">${quiz.question_count} questions</span></div>
+      <h3>${escapeHTML(quiz.title)}</h3>
+      <p>${escapeHTML(quiz.description || 'Review Linux concepts and check your understanding.')}</p>
+      ${attempt ? `<p class="path-meta">Latest: ${attempt.percentage}% · ${attempt.score}/${attempt.total_questions}</p>` : ''}
+      <button class="button button-primary" type="button" data-quiz-id="${quiz.id}">${attempt ? 'Retake quiz' : 'Start quiz'}</button>
+    </article>`;
+  }).join('');
+
+  const historySection = document.querySelector('#quiz-history');
+  const historyList = document.querySelector('#quiz-history-list');
+  historySection.classList.toggle('is-hidden', history.length === 0);
+  historyList.innerHTML = history.slice(0, 5).map((attempt) => {
+    const quiz = quizzes.find((item) => item.id === attempt.quiz_id);
+    return `<div class="history-row"><span>${escapeHTML(quiz?.title || 'Quiz')}</span><span>${attempt.score}/${attempt.total_questions} · <strong>${attempt.percentage}%</strong></span></div>`;
+  }).join('');
+}
+
+function showQuiz(quiz) {
+  document.querySelector('#quiz-message').textContent = '';
+  document.querySelector('#quiz-content').innerHTML = `
+    <p class="eyebrow">${escapeHTML(quiz.difficulty)} QUIZ</p>
+    <h2>${escapeHTML(quiz.title)}</h2>
+    ${quiz.description ? `<p class="quiz-intro">${escapeHTML(quiz.description)}</p>` : ''}
+    <p class="quiz-pass-note">Choose one answer for each question. Pass mark: 60%.</p>
+    <form id="quiz-form" data-quiz-id="${quiz.id}">
+      ${quiz.questions.map((question, index) => `
+        <fieldset class="quiz-question">
+          <legend>${index + 1}. ${escapeHTML(question.prompt)}</legend>
+          ${question.options.map((option, optionIndex) => `
+            <label class="quiz-option"><input type="radio" name="question-${question.id}" value="${optionIndex}" required><span>${escapeHTML(option)}</span></label>`).join('')}
+        </fieldset>`).join('')}
+      <button class="button button-primary quiz-submit" type="submit">Submit answers</button>
+    </form>`;
+  quizDialog.showModal();
+}
+
+async function submitCurrentQuiz(event) {
+  if (event.target.id !== 'quiz-form') return;
+  event.preventDefault();
+  if (!currentQuiz || !event.target.reportValidity()) return;
+  const form = event.target;
+  const submitButton = form.querySelector('[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Checking answers…';
+  const answers = currentQuiz.questions.map((question) => {
+    const selected = form.querySelector(`input[name="question-${question.id}"]:checked`);
+    return { question_id: question.id, selected_option_index: Number(selected.value) };
+  });
+  try {
+    const result = await api(`/quizzes/${currentQuiz.id}/attempts`, {
+      method: 'POST', body: JSON.stringify({ answers }),
+    });
+    pendingQuizBadges = result.newly_unlocked || [];
+    const resultClass = result.passed ? 'quiz-result' : 'quiz-result is-failed';
+    const badgeMessage = pendingQuizBadges.length
+      ? `<p class="result-badges">New badge${pendingQuizBadges.length > 1 ? 's' : ''}: ${pendingQuizBadges.map((badge) => escapeHTML(badge.title)).join(', ')}</p>`
+      : '';
+    document.querySelector('#quiz-content').innerHTML = `
+      <div class="${resultClass}">
+        <p class="eyebrow">${result.passed ? 'QUIZ PASSED' : 'QUIZ COMPLETE'}</p>
+        <h2>${result.passed ? 'Great work!' : 'Keep practicing'}</h2>
+        <span class="score">${result.percentage}%</span>
+        <p>${result.score} of ${result.total_questions} correct</p>
+        <p>${result.xp_awarded > 0 ? `+${result.xp_awarded} XP earned` : 'XP for this quiz was already collected'}</p>
+        <p>Total XP: ${result.total_xp} · Level ${result.level}</p>
+        ${badgeMessage}
+        <button class="button button-primary quiz-done" type="button">Continue</button>
+      </div>`;
+    await loadDashboard(false);
+  } catch (error) {
+    document.querySelector('#quiz-message').textContent = error.message;
+    submitButton.disabled = false;
+    submitButton.textContent = 'Submit answers';
+  }
+}
+
+function closeQuizAndCelebrate() {
+  if (quizDialog.open) quizDialog.close();
+  if (pendingQuizBadges.length) {
+    const unlocked = pendingQuizBadges;
+    pendingQuizBadges = [];
+    window.setTimeout(() => celebrateBadges(unlocked), 150);
+  }
+}
+
 function showLesson(lesson) {
   document.querySelector('#lesson-content').innerHTML = `
     <p class="eyebrow">${escapeHTML(lesson.difficulty)} LESSON</p>
@@ -211,9 +337,10 @@ function celebrateBadges(badges) {
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
   try {
-    const [profile, summary, paths, completions, badges] = await Promise.all([
+    const [profile, summary, paths, completions, badges, quizzes, quizHistory] = await Promise.all([
       api('/auth/me'), api('/dashboard'), api('/learning-paths'),
-      api('/lessons/completed/me'), api('/achievements/me'),
+      api('/lessons/completed/me'), api('/achievements/me'), api('/quizzes'),
+      api('/quizzes/attempts/me'),
     ]);
     authPanel.classList.add('is-hidden');
     dashboard.classList.remove('is-hidden');
@@ -231,6 +358,7 @@ async function loadDashboard(celebrateNew = false) {
     document.querySelector('#last-activity').textContent = summary.progress.last_activity || 'Complete a lesson to start tracking your progress.';
     completedLessonIds = new Set(completions.map((item) => item.lesson_id));
     renderPaths(paths);
+    renderQuizzes(quizzes, quizHistory);
     renderBadges(badges.achievements);
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
