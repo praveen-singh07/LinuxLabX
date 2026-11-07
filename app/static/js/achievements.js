@@ -11,12 +11,16 @@ const authToggle = document.querySelector('#auth-toggle');
 const nameField = document.querySelector('#name-field');
 const pathGrid = document.querySelector('#path-grid');
 const quizGrid = document.querySelector('#quiz-grid');
+const practiceGrid = document.querySelector('#practice-grid');
 const lessonDialog = document.querySelector('#lesson-dialog');
 const quizDialog = document.querySelector('#quiz-dialog');
+const practiceDialog = document.querySelector('#practice-dialog');
 let registerMode = false;
 let currentLesson = null;
 let currentQuiz = null;
 let pendingQuizBadges = [];
+let currentPractice = null;
+let pendingPracticeBadges = [];
 let completedLessonIds = new Set();
 
 function escapeHTML(value) {
@@ -86,6 +90,7 @@ document.querySelector('.dialog-close').addEventListener('click', () => document
 document.querySelector('.lesson-close').addEventListener('click', () => lessonDialog.close());
 document.querySelector('#complete-lesson-button').addEventListener('click', completeCurrentLesson);
 document.querySelector('.quiz-close').addEventListener('click', closeQuizAndCelebrate);
+document.querySelector('.practice-close').addEventListener('click', closePracticeAndCelebrate);
 quizDialog.addEventListener('cancel', (event) => {
   event.preventDefault();
   closeQuizAndCelebrate();
@@ -111,6 +116,32 @@ quizGrid.addEventListener('click', async (event) => {
 quizDialog.addEventListener('submit', submitCurrentQuiz);
 quizDialog.addEventListener('click', (event) => {
   if (event.target.closest('.quiz-done')) closeQuizAndCelebrate();
+});
+
+practiceGrid.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-exercise-id]');
+  if (!button) return;
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Loading…';
+  try {
+    currentPractice = await api(`/practice/${button.dataset.exerciseId}`);
+    showPractice(currentPractice);
+  } catch (error) {
+    pageMessage.textContent = error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+});
+
+practiceDialog.addEventListener('submit', submitPracticeAnswer);
+practiceDialog.addEventListener('click', (event) => {
+  if (event.target.closest('.practice-done')) closePracticeAndCelebrate();
+});
+practiceDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closePracticeAndCelebrate();
 });
 
 pathGrid.addEventListener('click', async (event) => {
@@ -211,6 +242,35 @@ function renderQuizzes(quizzes, history) {
   }).join('');
 }
 
+function renderPractice(exercises, history) {
+  const attemptsByExercise = new Map();
+  history.forEach((attempt) => {
+    if (!attemptsByExercise.has(attempt.exercise_id)) attemptsByExercise.set(attempt.exercise_id, []);
+    attemptsByExercise.get(attempt.exercise_id).push(attempt);
+  });
+  document.querySelector('#practice-count').textContent = `${exercises.length} ${exercises.length === 1 ? 'exercise' : 'exercises'}`;
+  document.querySelector('#practice-empty').classList.toggle('is-hidden', exercises.length > 0);
+  practiceGrid.innerHTML = exercises.map((exercise) => {
+    const attempts = attemptsByExercise.get(exercise.id) || [];
+    const latest = attempts[0];
+    return `<article class="practice-card">
+      <div class="practice-card-top"><span class="difficulty-pill">${escapeHTML(exercise.difficulty)}</span><span class="question-count">${attempts.length} ${attempts.length === 1 ? 'attempt' : 'attempts'}</span></div>
+      <h3>${escapeHTML(exercise.title)}</h3>
+      <p>${escapeHTML(exercise.description || 'Practice a Linux command and check your answer.')}</p>
+      ${latest ? `<p class="path-meta">Latest: ${latest.is_correct ? 'Correct ✓' : 'Try again'}</p>` : ''}
+      <button class="button button-primary" type="button" data-exercise-id="${exercise.id}">${latest?.is_correct ? 'Practice again' : 'Open exercise'}</button>
+    </article>`;
+  }).join('');
+
+  const historySection = document.querySelector('#practice-history');
+  const historyList = document.querySelector('#practice-history-list');
+  historySection.classList.toggle('is-hidden', history.length === 0);
+  historyList.innerHTML = history.slice(0, 5).map((attempt) => {
+    const exercise = exercises.find((item) => item.id === attempt.exercise_id);
+    return `<div class="history-row"><span>${escapeHTML(exercise?.title || 'Practice exercise')}</span><span><strong>${attempt.is_correct ? 'Correct' : 'Try again'}</strong></span></div>`;
+  }).join('');
+}
+
 function showQuiz(quiz) {
   document.querySelector('#quiz-message').textContent = '';
   document.querySelector('#quiz-content').innerHTML = `
@@ -228,6 +288,68 @@ function showQuiz(quiz) {
       <button class="button button-primary quiz-submit" type="submit">Submit answers</button>
     </form>`;
   quizDialog.showModal();
+}
+
+function showPractice(exercise) {
+  document.querySelector('#practice-message').textContent = '';
+  document.querySelector('#practice-content').innerHTML = `
+    <p class="eyebrow">${escapeHTML(exercise.difficulty)} PRACTICE</p>
+    <h2>${escapeHTML(exercise.title)}</h2>
+    ${exercise.description ? `<p>${escapeHTML(exercise.description)}</p>` : ''}
+    <div class="practice-instructions">${escapeHTML(exercise.instructions)}</div>
+    <form id="practice-form" data-exercise-id="${exercise.id}">
+      <label class="practice-answer-label" for="practice-answer">Your answer
+        <input id="practice-answer" class="practice-answer" name="answer" type="text" maxlength="2000" autocomplete="off" spellcheck="false" required>
+      </label>
+      <button class="button button-primary" type="submit">Check answer</button>
+    </form>`;
+  practiceDialog.showModal();
+  document.querySelector('#practice-answer').focus();
+}
+
+async function submitPracticeAnswer(event) {
+  if (event.target.id !== 'practice-form') return;
+  event.preventDefault();
+  if (!currentPractice || !event.target.reportValidity()) return;
+  const form = event.target;
+  const submitButton = form.querySelector('[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Checking answer…';
+  const answer = new FormData(form).get('answer');
+  try {
+    const result = await api(`/practice/${currentPractice.id}/attempts`, {
+      method: 'POST', body: JSON.stringify({ answer }),
+    });
+    pendingPracticeBadges = result.newly_unlocked || [];
+    const resultClass = result.is_correct ? 'practice-result' : 'practice-result is-incorrect';
+    const badgeMessage = pendingPracticeBadges.length
+      ? `<p class="result-badges">New badge${pendingPracticeBadges.length > 1 ? 's' : ''}: ${pendingPracticeBadges.map((badge) => escapeHTML(badge.title)).join(', ')}</p>`
+      : '';
+    document.querySelector('#practice-content').innerHTML = `
+      <div class="${resultClass}">
+        <p class="eyebrow">${result.is_correct ? 'CORRECT ANSWER' : 'ANSWER RECORDED'}</p>
+        <h2>${result.is_correct ? 'Nice work!' : 'Keep trying'}</h2>
+        <p>${escapeHTML(result.feedback)}</p>
+        <p class="result-xp">${result.xp_awarded > 0 ? `+${result.xp_awarded} XP` : `${result.total_xp} total XP`}</p>
+        <p>Level ${result.level} · ${result.practice_completed} exercises completed</p>
+        ${badgeMessage}
+        <button class="button button-primary practice-done" type="button">Continue</button>
+      </div>`;
+    await loadDashboard(false);
+  } catch (error) {
+    document.querySelector('#practice-message').textContent = error.message;
+    submitButton.disabled = false;
+    submitButton.textContent = 'Check answer';
+  }
+}
+
+function closePracticeAndCelebrate() {
+  if (practiceDialog.open) practiceDialog.close();
+  if (pendingPracticeBadges.length) {
+    const unlocked = pendingPracticeBadges;
+    pendingPracticeBadges = [];
+    window.setTimeout(() => celebrateBadges(unlocked), 150);
+  }
 }
 
 async function submitCurrentQuiz(event) {
@@ -337,10 +459,10 @@ function celebrateBadges(badges) {
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
   try {
-    const [profile, summary, paths, completions, badges, quizzes, quizHistory] = await Promise.all([
+    const [profile, summary, paths, completions, badges, quizzes, quizHistory, exercises, practiceHistory] = await Promise.all([
       api('/auth/me'), api('/dashboard'), api('/learning-paths'),
       api('/lessons/completed/me'), api('/achievements/me'), api('/quizzes'),
-      api('/quizzes/attempts/me'),
+      api('/quizzes/attempts/me'), api('/practice'), api('/practice/attempts/me'),
     ]);
     authPanel.classList.add('is-hidden');
     dashboard.classList.remove('is-hidden');
@@ -359,6 +481,7 @@ async function loadDashboard(celebrateNew = false) {
     completedLessonIds = new Set(completions.map((item) => item.lesson_id));
     renderPaths(paths);
     renderQuizzes(quizzes, quizHistory);
+    renderPractice(exercises, practiceHistory);
     renderBadges(badges.achievements);
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;

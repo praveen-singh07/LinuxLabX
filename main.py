@@ -32,7 +32,9 @@ app = FastAPI(
     title="LinuxLabX", description="Gamified Linux Learning Platform", version="1.0.0"
 )
 
-STATIC_DIR = Path(__file__).resolve().parent / "static"
+APP_DIR = Path(__file__).resolve().parent / "app"
+STATIC_DIR = APP_DIR / "static"
+TEMPLATE_DIR = APP_DIR / "templates"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
@@ -66,9 +68,9 @@ def health_check():
 
 @app.get("/app/achievements", include_in_schema=False)
 def achievements_page():
-    return FileResponse(STATIC_DIR / "achievements.html")
+    return FileResponse(TEMPLATE_DIR / "dashboard.html")
 
 
 @app.get("/app/dashboard", include_in_schema=False)
 def student_dashboard_page():
-    return FileResponse(STATIC_DIR / "achievements.html")
+    return FileResponse(TEMPLATE_DIR / "dashboard.html")
