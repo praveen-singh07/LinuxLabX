@@ -80,6 +80,18 @@
             <div id="quiz-history-list"></div>
           </div>
         </section>
+        <section class="practice-section" aria-labelledby="practice-title">
+          <div class="section-heading">
+            <div><p class="eyebrow">PUT YOUR COMMANDS TO WORK</p><h2 id="practice-title">Practice exercises</h2></div>
+            <span id="practice-count" class="muted-label"></span>
+          </div>
+          <div id="practice-grid" class="practice-grid"></div>
+          <p id="practice-empty" class="empty-state is-hidden">No published practice exercises yet. Check back soon.</p>
+          <div id="practice-history" class="practice-history is-hidden">
+            <h3>Recent submissions</h3>
+            <div id="practice-history-list"></div>
+          </div>
+        </section>
         <section id="achievements" class="achievement-preview">
           <div><p class="eyebrow">COLLECT YOUR MILESTONES</p><h2>My Achievements</h2><p id="achievement-summary" class="hero-copy">Your badges appear here as you learn.</p></div>
           <a class="button button-primary" href="#collection">View all badges <span aria-hidden="true">→</span></a>
@@ -110,6 +122,11 @@
       <button class="dialog-close quiz-close" type="button" aria-label="Close">×</button>
       <div id="quiz-content"></div>
       <p id="quiz-message" class="quiz-message" role="status"></p>
+    </dialog>
+    <dialog id="practice-dialog" class="practice-dialog">
+      <button class="dialog-close practice-close" type="button" aria-label="Close">×</button>
+      <div id="practice-content"></div>
+      <p id="practice-message" class="quiz-message" role="status"></p>
     </dialog>
     <dialog id="unlock-dialog" class="unlock-dialog">
       <button class="dialog-close" type="button" aria-label="Close">×</button>

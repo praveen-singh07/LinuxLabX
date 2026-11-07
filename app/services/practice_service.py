@@ -10,7 +10,7 @@ from app.services.achievement_service import evaluate_user_achievements
 
 
 def normalize_answer(value: str) -> str:
-    return re.sub(r"\\s+", " ", value.strip()).casefold()
+    return re.sub(r"\s+", " ", value.strip()).casefold()
 
 
 def list_published_exercises(db: Session):

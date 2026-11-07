@@ -9,7 +9,7 @@ from app.models.quiz_attempt import QuizAttempt
 from app.models.xp import UserXP
 
 
-# SVG artwork lives in static/badges. Conditions use existing LinuxLabX activity data.
+# SVG artwork lives in app/static/badges. Conditions use existing activity data.
 ACHIEVEMENT_CATALOG = (
     ("first_steps", "First Steps", "Your Linux learning journey begins.", "beginner", "Complete your first lesson.", "first_steps.svg", "lessons", 1),
     ("linux_explorer", "Linux Explorer", "Explore five lessons and build your foundation.", "beginner", "Complete 5 lessons.", "linux_explorer.svg", "lessons", 5),
