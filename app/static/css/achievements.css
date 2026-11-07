@@ -133,6 +133,33 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .practice-result .result-xp { color: var(--gold); font: 700 22px 'Space Grotesk', sans-serif; }
 .practice-result .result-badges { margin-top: 14px; color: #f1d28a; }
 .practice-result .practice-done { display: block; margin: 16px auto 0; }
+.challenge-section { padding: 0 0 42px; }
+.challenge-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.challenge-card { min-width: 0; padding: 18px; border: 1px solid #574568; border-radius: 15px; background: linear-gradient(140deg, #1a1b30, #111725); }
+.challenge-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.challenge-card h3 { margin: 0 0 7px; font: 700 16px 'Space Grotesk', sans-serif; }
+.challenge-card > p { min-height: 37px; margin: 0 0 15px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.challenge-card .button { width: 100%; }
+.challenge-card .path-meta { min-height: 0; margin: 0 0 10px; }
+.challenge-history { margin-top: 25px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: #111a29a8; }
+.challenge-history h3 { margin: 0 0 11px; font: 600 14px 'Space Grotesk', sans-serif; }
+.challenge-dialog { position: relative; width: min(640px, calc(100% - 30px)); max-height: min(86vh, 760px); overflow: auto; padding: 30px; border: 1px solid #614d75; border-radius: 18px; color: var(--text); background: #111b2b; box-shadow: 0 25px 90px #000a; }
+.challenge-dialog::backdrop { background: #030711c9; backdrop-filter: blur(5px); }
+.challenge-dialog h2 { margin: 0 36px 10px 0; font-size: 26px; }
+.challenge-dialog p { color: #b4bfd1; font-size: 12px; line-height: 1.7; }
+.challenge-scenario { margin: 15px 0 12px; padding: 15px; border: 1px solid #4d4161; border-radius: 11px; color: #e5d6f2; background: #171321; font-size: 12px; line-height: 1.7; white-space: pre-wrap; }
+.challenge-instructions { color: #bdc9dc; }
+.hint-list { display: grid; gap: 8px; margin: 13px 0; }
+.hint-row { display: flex; align-items: start; gap: 9px; padding: 10px 11px; border: 1px solid #493a57; border-radius: 9px; color: #dfc6f3; background: #1c1726; font-size: 11px; line-height: 1.55; }
+.hint-row button { flex: 0 0 auto; padding: 0; border: 0; color: #d3a8f2; background: none; cursor: pointer; font-size: 11px; font-weight: 700; }
+.challenge-answer-label { display: grid; gap: 7px; margin: 17px 0 12px; color: #cad6e5; font-size: 11px; font-weight: 700; }
+.challenge-answer { width: 100%; padding: 12px 13px; border: 1px solid #544367; border-radius: 9px; outline: none; color: #edddfa; background: #110e19; font: 12px Consolas, monospace; }
+.challenge-answer:focus { border-color: #bd91dc; box-shadow: 0 0 0 3px #a36fc126; }
+.challenge-result { padding: 19px; border: 1px solid #385743; border-radius: 13px; background: #13251f; text-align: center; }
+.challenge-result h2 { margin: 0 0 8px; }
+.challenge-result .result-xp { color: var(--gold); font: 700 22px 'Space Grotesk', sans-serif; }
+.challenge-result .result-badges { margin-top: 14px; color: #f1d28a; }
+.challenge-result .challenge-done { display: block; margin: 16px auto 0; }
 .path-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: linear-gradient(140deg, #151f30, #101725); }
 .path-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .path-index { color: #8dc8ff; font: 700 11px 'Space Grotesk', sans-serif; letter-spacing: .12em; }
@@ -207,11 +234,13 @@ footer span { padding: 0 4px; color: var(--gold); }
   .path-grid { grid-template-columns: 1fr; }
   .quiz-grid { grid-template-columns: 1fr; }
   .practice-grid { grid-template-columns: 1fr; }
+  .challenge-grid { grid-template-columns: 1fr; }
   .achievement-preview { align-items: start; flex-direction: column; padding: 19px; }
   .welcome-row h2 { font-size: 19px; }
   .lesson-dialog { padding: 24px 19px; }
   .quiz-dialog { padding: 24px 19px; }
   .practice-dialog { padding: 24px 19px; }
+  .challenge-dialog { padding: 24px 19px; }
   .badge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .badge-card { min-height: 245px; padding: 15px 10px; }
   .badge-art-wrap { width: 112px; height: 112px; }

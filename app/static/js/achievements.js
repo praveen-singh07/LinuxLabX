@@ -12,15 +12,19 @@ const nameField = document.querySelector('#name-field');
 const pathGrid = document.querySelector('#path-grid');
 const quizGrid = document.querySelector('#quiz-grid');
 const practiceGrid = document.querySelector('#practice-grid');
+const challengeGrid = document.querySelector('#challenge-grid');
 const lessonDialog = document.querySelector('#lesson-dialog');
 const quizDialog = document.querySelector('#quiz-dialog');
 const practiceDialog = document.querySelector('#practice-dialog');
+const challengeDialog = document.querySelector('#challenge-dialog');
 let registerMode = false;
 let currentLesson = null;
 let currentQuiz = null;
 let pendingQuizBadges = [];
 let currentPractice = null;
 let pendingPracticeBadges = [];
+let currentChallenge = null;
+let pendingChallengeBadges = [];
 let completedLessonIds = new Set();
 
 function escapeHTML(value) {
@@ -91,6 +95,7 @@ document.querySelector('.lesson-close').addEventListener('click', () => lessonDi
 document.querySelector('#complete-lesson-button').addEventListener('click', completeCurrentLesson);
 document.querySelector('.quiz-close').addEventListener('click', closeQuizAndCelebrate);
 document.querySelector('.practice-close').addEventListener('click', closePracticeAndCelebrate);
+document.querySelector('.challenge-close').addEventListener('click', closeChallengeAndCelebrate);
 quizDialog.addEventListener('cancel', (event) => {
   event.preventDefault();
   closeQuizAndCelebrate();
@@ -142,6 +147,38 @@ practiceDialog.addEventListener('click', (event) => {
 practiceDialog.addEventListener('cancel', (event) => {
   event.preventDefault();
   closePracticeAndCelebrate();
+});
+
+challengeGrid.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-challenge-id]');
+  if (!button) return;
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Loading…';
+  try {
+    currentChallenge = await api(`/challenges/${button.dataset.challengeId}`);
+    showChallenge(currentChallenge);
+  } catch (error) {
+    pageMessage.textContent = error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+});
+
+challengeDialog.addEventListener('submit', submitChallengeAnswer);
+challengeDialog.addEventListener('click', (event) => {
+  const hintButton = event.target.closest('[data-hint-index]');
+  if (hintButton && currentChallenge) {
+    const hint = currentChallenge.hints[Number(hintButton.dataset.hintIndex)];
+    hintButton.parentElement.textContent = `Hint: ${hint}`;
+    return;
+  }
+  if (event.target.closest('.challenge-done')) closeChallengeAndCelebrate();
+});
+challengeDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closeChallengeAndCelebrate();
 });
 
 pathGrid.addEventListener('click', async (event) => {
@@ -269,6 +306,110 @@ function renderPractice(exercises, history) {
     const exercise = exercises.find((item) => item.id === attempt.exercise_id);
     return `<div class="history-row"><span>${escapeHTML(exercise?.title || 'Practice exercise')}</span><span><strong>${attempt.is_correct ? 'Correct' : 'Try again'}</strong></span></div>`;
   }).join('');
+}
+
+function renderChallenges(challenges, history) {
+  const attemptsByChallenge = new Map();
+  history.forEach((attempt) => {
+    if (!attemptsByChallenge.has(attempt.challenge_id)) attemptsByChallenge.set(attempt.challenge_id, []);
+    attemptsByChallenge.get(attempt.challenge_id).push(attempt);
+  });
+  document.querySelector('#challenge-count').textContent = `${challenges.length} ${challenges.length === 1 ? 'challenge' : 'challenges'}`;
+  document.querySelector('#challenge-empty').classList.toggle('is-hidden', challenges.length > 0);
+  challengeGrid.innerHTML = challenges.map((challenge) => {
+    const attempts = attemptsByChallenge.get(challenge.id) || [];
+    const latest = attempts[0];
+    return `<article class="challenge-card">
+      <div class="challenge-card-top"><span class="difficulty-pill">${escapeHTML(challenge.difficulty)}</span><span class="question-count">${attempts.length} ${attempts.length === 1 ? 'attempt' : 'attempts'}</span></div>
+      <h3>${escapeHTML(challenge.title)}</h3>
+      <p>${escapeHTML(challenge.description || 'Solve a Linux scenario using the command line.')}</p>
+      ${latest ? `<p class="path-meta">Latest: ${latest.is_correct ? 'Solved ✓' : 'Try again'}</p>` : ''}
+      <button class="button button-primary" type="button" data-challenge-id="${challenge.id}">${latest?.is_correct ? 'Review challenge' : 'Solve challenge'}</button>
+    </article>`;
+  }).join('');
+
+  const historySection = document.querySelector('#challenge-history');
+  const historyList = document.querySelector('#challenge-history-list');
+  historySection.classList.toggle('is-hidden', history.length === 0);
+  historyList.innerHTML = history.slice(0, 5).map((attempt) => {
+    const challenge = challenges.find((item) => item.id === attempt.challenge_id);
+    return `<div class="history-row"><span>${escapeHTML(challenge?.title || 'Challenge')}</span><span><strong>${attempt.is_correct ? 'Solved' : 'Try again'}</strong></span></div>`;
+  }).join('');
+}
+
+function showChallenge(challenge) {
+  document.querySelector('#challenge-message').textContent = '';
+  document.querySelector('#challenge-content').innerHTML = `
+    <p class="eyebrow">${escapeHTML(challenge.difficulty)} CHALLENGE</p>
+    <h2>${escapeHTML(challenge.title)}</h2>
+    ${challenge.description ? `<p>${escapeHTML(challenge.description)}</p>` : ''}
+    <div class="challenge-scenario">${escapeHTML(challenge.scenario)}</div>
+    <p class="challenge-instructions">${escapeHTML(challenge.instructions)}</p>
+    ${challenge.hints?.length ? `<div class="hint-list"><p class="eyebrow">NEED A HINT?</p>${challenge.hints.map((hint, index) => `<div class="hint-row"><button type="button" data-hint-index="${index}">Reveal hint ${index + 1}</button></div>`).join('')}</div>` : ''}
+    <form id="challenge-form" data-challenge-id="${challenge.id}">
+      <label class="challenge-answer-label" for="challenge-answer">Your Linux command
+        <input id="challenge-answer" class="challenge-answer" name="answer" type="text" maxlength="2000" autocomplete="off" spellcheck="false" required>
+      </label>
+      <button class="button button-primary" type="submit">Check solution</button>
+    </form>`;
+  challengeDialog.showModal();
+  document.querySelector('#challenge-answer').focus();
+}
+
+async function submitChallengeAnswer(event) {
+  if (event.target.id !== 'challenge-form') return;
+  event.preventDefault();
+  if (!currentChallenge || !event.target.reportValidity()) return;
+  const form = event.target;
+  const submitButton = form.querySelector('[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Checking solution…';
+  const answer = new FormData(form).get('answer');
+  try {
+    const result = await api(`/challenges/${currentChallenge.id}/attempts`, {
+      method: 'POST', body: JSON.stringify({ answer }),
+    });
+    if (!result.is_correct) {
+      const message = document.querySelector('#challenge-message');
+      message.style.color = '#ffb6a3';
+      message.textContent = result.feedback;
+      form.reset();
+      submitButton.disabled = false;
+      submitButton.textContent = 'Try again';
+      await loadDashboard(false);
+      document.querySelector('#challenge-answer')?.focus();
+      return;
+    }
+
+    pendingChallengeBadges = result.newly_unlocked || [];
+    const badgeMessage = pendingChallengeBadges.length
+      ? `<p class="result-badges">New badge${pendingChallengeBadges.length > 1 ? 's' : ''}: ${pendingChallengeBadges.map((badge) => escapeHTML(badge.title)).join(', ')}</p>`
+      : '';
+    document.querySelector('#challenge-content').innerHTML = `
+      <div class="challenge-result">
+        <p class="eyebrow">CHALLENGE SOLVED</p>
+        <h2>Well done!</h2>
+        <p>${escapeHTML(result.feedback)}</p>
+        <p class="result-xp">${result.xp_awarded > 0 ? `+${result.xp_awarded} XP` : `${result.total_xp} total XP`}</p>
+        <p>Level ${result.level} · ${result.challenges_completed} challenges completed</p>
+        ${badgeMessage}
+        <button class="button button-primary challenge-done" type="button">Continue</button>
+      </div>`;
+    await loadDashboard(false);
+  } catch (error) {
+    document.querySelector('#challenge-message').textContent = error.message;
+    submitButton.disabled = false;
+    submitButton.textContent = 'Check solution';
+  }
+}
+
+function closeChallengeAndCelebrate() {
+  if (challengeDialog.open) challengeDialog.close();
+  if (pendingChallengeBadges.length) {
+    const unlocked = pendingChallengeBadges;
+    pendingChallengeBadges = [];
+    window.setTimeout(() => celebrateBadges(unlocked), 150);
+  }
 }
 
 function showQuiz(quiz) {
@@ -459,10 +600,11 @@ function celebrateBadges(badges) {
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
   try {
-    const [profile, summary, paths, completions, badges, quizzes, quizHistory, exercises, practiceHistory] = await Promise.all([
+    const [profile, summary, paths, completions, badges, quizzes, quizHistory, exercises, practiceHistory, challenges, challengeHistory] = await Promise.all([
       api('/auth/me'), api('/dashboard'), api('/learning-paths'),
       api('/lessons/completed/me'), api('/achievements/me'), api('/quizzes'),
       api('/quizzes/attempts/me'), api('/practice'), api('/practice/attempts/me'),
+      api('/challenges'), api('/challenges/attempts/me'),
     ]);
     authPanel.classList.add('is-hidden');
     dashboard.classList.remove('is-hidden');
@@ -482,6 +624,7 @@ async function loadDashboard(celebrateNew = false) {
     renderPaths(paths);
     renderQuizzes(quizzes, quizHistory);
     renderPractice(exercises, practiceHistory);
+    renderChallenges(challenges, challengeHistory);
     renderBadges(badges.achievements);
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
