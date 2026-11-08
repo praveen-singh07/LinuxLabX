@@ -76,6 +76,20 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .stat-card strong { font: 700 18px 'Space Grotesk', sans-serif; }
 .stat-card div > span { margin-top: 4px; color: var(--muted); font-size: 10px; }
 .progress-panel { margin: 14px 0 44px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 15px; background: #111a29b8; }
+.activity-section { padding: 0 0 42px; }
+.activity-feed { display: grid; gap: 8px; }
+.activity-row { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; align-items: center; gap: 13px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(120deg,#131d2c,#101725); }
+.activity-icon { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 10px; font: 700 15px 'Space Grotesk',sans-serif; }
+.activity-lesson { color: #81c4ff; background: #1b477035; }
+.activity-quiz { color: #d8a8ff; background: #55337435; }
+.activity-practice { color: #8ce0b1; background: #1b553535; }
+.activity-challenge { color: #f3c86f; background: #5b431a35; }
+.activity-copy { min-width: 0; }
+.activity-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.activity-title-row strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.activity-status { color: #9de3b3; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
+.activity-copy p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.activity-time { color: var(--muted); font-size: 9px; white-space: nowrap; }
 .progress-copy { display: flex; justify-content: space-between; align-items: end; gap: 18px; }
 .progress-copy .eyebrow { margin-bottom: 7px; }
 .progress-copy h2 { font-size: 18px; }
@@ -257,6 +271,9 @@ footer span { padding: 0 4px; color: var(--gold); }
   .leaderboard-row { grid-template-columns: 34px minmax(0,1fr) 60px 65px; gap: 6px; padding: 11px 9px; }
   .leaderboard-level { font-size: 9px; }
   .leaderboard-xp { font-size: 10px; }
+  .activity-row { grid-template-columns: 32px minmax(0,1fr); gap: 9px; padding: 11px; }
+  .activity-icon { width: 30px; height: 30px; }
+  .activity-time { grid-column: 2; }
   .path-grid { grid-template-columns: 1fr; }
   .quiz-grid { grid-template-columns: 1fr; }
   .practice-grid { grid-template-columns: 1fr; }

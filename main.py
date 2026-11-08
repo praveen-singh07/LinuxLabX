@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.achievements import router as achievements_router
+from app.api.routes.activity import router as activity_router
 from app.api.routes.admin_challenges import router as admin_challenges_router
 from app.api.routes.admin_learning_paths import router as admin_learning_paths_router
 from app.api.routes.admin_lessons import router as admin_lessons_router
@@ -44,6 +45,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router)
 app.include_router(achievements_router)
+app.include_router(activity_router)
 app.include_router(dashboard_router)
 app.include_router(gamification_router)
 app.include_router(lessons_router)

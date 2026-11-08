@@ -677,6 +677,23 @@ function renderGamification(streak, leaderboard) {
     ? `Your rank: #${leaderboard.current_user_rank}` : 'Your rank will appear after earning XP';
 }
 
+function renderActivityFeed(response) {
+  const feed = document.querySelector('#activity-feed');
+  const items = response.items || [];
+  document.querySelector('#activity-empty').classList.toggle('is-hidden', items.length > 0);
+  document.querySelector('#activity-error').classList.add('is-hidden');
+  const icons = { lesson: '⌘', quiz: '▤', practice: '✓', challenge: '⚑' };
+  const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  feed.innerHTML = items.map((item) => {
+    const date = formatter.format(new Date(item.happened_at));
+    return `<article class="activity-row">
+      <span class="activity-icon activity-${escapeHTML(item.activity_type)}">${icons[item.activity_type] || '•'}</span>
+      <div class="activity-copy"><div class="activity-title-row"><strong>${escapeHTML(item.title)}</strong><span class="activity-status">${escapeHTML(item.status)}</span></div><p>${escapeHTML(item.detail)}</p></div>
+      <time class="activity-time" datetime="${escapeHTML(item.happened_at)}">${escapeHTML(date)}</time>
+    </article>`;
+  }).join('');
+}
+
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
   try {
@@ -710,16 +727,23 @@ async function loadDashboard(celebrateNew = false) {
     renderBadges(badges.achievements);
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     const utcOffsetMinutes = new Date().getTimezoneOffset();
-    const gamification = await Promise.allSettled([
+    const dashboardExtras = await Promise.allSettled([
       api(`/gamification/streak?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api('/gamification/leaderboard?limit=10'),
+      api('/activity/me?limit=12'),
     ]);
-    if (gamification.every((result) => result.status === 'fulfilled')) {
-      renderGamification(gamification[0].value, gamification[1].value);
+    if (dashboardExtras[0].status === 'fulfilled' && dashboardExtras[1].status === 'fulfilled') {
+      renderGamification(dashboardExtras[0].value, dashboardExtras[1].value);
     } else {
       document.querySelector('#stat-streak').textContent = '—';
       document.querySelector('#streak-best').textContent = 'Streak unavailable';
       document.querySelector('#leaderboard-rank').textContent = 'Leaderboard unavailable';
+    }
+    if (dashboardExtras[2].status === 'fulfilled') {
+      renderActivityFeed(dashboardExtras[2].value);
+    } else {
+      document.querySelector('#activity-empty').classList.add('is-hidden');
+      document.querySelector('#activity-error').classList.remove('is-hidden');
     }
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
