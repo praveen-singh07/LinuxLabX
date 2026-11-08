@@ -65,6 +65,8 @@ def test_dashboard_page_and_static_assets_are_served(client):
     assert "Learning paths" in page.text
     assert "Global leaderboard" in page.text
     assert "stat-streak" in page.text
+    assert "Account settings" in page.text
+    assert "password-form" in page.text
 
 
 def test_admin_content_studio_page_and_assets_are_served(client):
