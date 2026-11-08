@@ -10,6 +10,7 @@ from app.api.routes.admin_learning_paths import router as admin_learning_paths_r
 from app.api.routes.admin_lessons import router as admin_lessons_router
 from app.api.routes.admin_practice import router as admin_practice_router
 from app.api.routes.admin_quizzes import router as admin_quizzes_router
+from app.api.routes.admin_users import router as admin_users_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.challenges import router as challenges_router
 from app.api.routes.dashboard import router as dashboard_router
@@ -52,6 +53,7 @@ app.include_router(admin_learning_paths_router)
 app.include_router(lesson_completion_router)
 app.include_router(quizzes_router)
 app.include_router(admin_quizzes_router)
+app.include_router(admin_users_router)
 app.include_router(practice_router)
 app.include_router(admin_practice_router)
 app.include_router(challenges_router)

@@ -65,6 +65,10 @@ const resources = {
 let currentItems = [];
 let currentPaths = [];
 let currentLessons = [];
+let currentAdmin = null;
+let currentUsers = [];
+let usersOffset = 0;
+const usersPageSize = 20;
 let selectedId = null;
 
 function safeText(value) {
@@ -268,6 +272,7 @@ async function startAdminStudio() {
   try {
     const profile = await adminApi('/auth/me');
     if (profile.role !== 'admin' || !profile.is_active) { deniedPanel.classList.remove('is-hidden'); return; }
+    currentAdmin = profile;
     adminApp.classList.remove('is-hidden');
     await loadTopicPaths();
     currentLessons = await adminApi('/admin/lessons');
@@ -276,5 +281,100 @@ async function startAdminStudio() {
     deniedPanel.classList.remove('is-hidden');
   }
 }
+
+function switchAdminView(view) {
+  const showUsers = view === 'users';
+  document.querySelectorAll('[data-content-view]').forEach((element) => {
+    element.classList.toggle('is-hidden', showUsers);
+  });
+  document.querySelector('#users-panel').classList.toggle('is-hidden', !showUsers);
+  document.querySelector('#content-tab').classList.toggle('is-active', !showUsers);
+  document.querySelector('#users-tab').classList.toggle('is-active', showUsers);
+  if (showUsers) {
+    Promise.allSettled([loadOverview(), loadUsers()]);
+  } else {
+    loadItems();
+  }
+}
+
+async function loadOverview() {
+  try {
+    const overview = await adminApi('/admin/overview');
+    document.querySelector('#overview-users').textContent = overview.users_total;
+    document.querySelector('#overview-active').textContent = overview.users_active;
+    document.querySelector('#overview-suspended').textContent = overview.users_suspended;
+    document.querySelector('#overview-paths').textContent = overview.learning_paths;
+    document.querySelector('#overview-lessons').textContent = overview.lessons;
+    document.querySelector('#overview-quizzes').textContent = overview.quizzes;
+    document.querySelector('#overview-activities').textContent = overview.practice_exercises + overview.challenges;
+  } catch (error) {
+    document.querySelector('#users-message').textContent = error.message;
+  }
+}
+
+async function loadUsers() {
+  const params = new URLSearchParams({
+    limit: String(usersPageSize),
+    offset: String(usersOffset),
+    status_filter: document.querySelector('#user-status').value,
+    role_filter: document.querySelector('#user-role').value,
+  });
+  const search = document.querySelector('#user-search').value.trim();
+  if (search) params.set('search', search);
+  try {
+    const result = await adminApi(`/admin/users?${params.toString()}`);
+    currentUsers = result.items;
+    document.querySelector('#users-count').textContent = `${result.total} accounts`;
+    document.querySelector('#users-empty').classList.toggle('is-hidden', currentUsers.length > 0);
+    document.querySelector('#users-page').textContent = result.total
+      ? `${usersOffset + 1}–${Math.min(usersOffset + result.items.length, result.total)} of ${result.total}` : '0 accounts';
+    document.querySelector('#users-prev').disabled = usersOffset === 0;
+    document.querySelector('#users-next').disabled = usersOffset + usersPageSize >= result.total;
+    document.querySelector('#users-list').innerHTML = currentUsers.map((user) => `
+      <article class="admin-user-row">
+        <div class="user-identity"><strong>${safeText(user.name)} ${user.id === currentAdmin.id ? '<span class="user-you">YOU</span>' : ''}</strong><span>${safeText(user.email)} · #${user.id}</span></div>
+        <span class="user-role-pill">${safeText(user.role)}</span>
+        <span class="admin-badge ${user.is_active ? '' : 'is-draft'}">${user.is_active ? 'Active' : 'Suspended'}</span>
+        <div class="user-actions">${user.id === currentAdmin.id ? '<span class="muted-label">Your account</span>' : `<button class="button button-quiet" type="button" data-user-status="${user.id}">${user.is_active ? 'Suspend' : 'Activate'}</button><button class="button button-quiet" type="button" data-user-role="${user.id}">${user.role === 'admin' ? 'Make student' : 'Make admin'}</button>`}</div>
+      </article>`).join('');
+  } catch (error) {
+    document.querySelector('#users-message').textContent = error.message;
+  }
+}
+
+document.querySelector('#content-tab').addEventListener('click', () => switchAdminView('content'));
+document.querySelector('#users-tab').addEventListener('click', () => switchAdminView('users'));
+document.querySelector('#user-search-button').addEventListener('click', () => { usersOffset = 0; loadUsers(); });
+document.querySelector('#user-search').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') { event.preventDefault(); usersOffset = 0; loadUsers(); }
+});
+document.querySelector('#users-prev').addEventListener('click', () => { usersOffset = Math.max(0, usersOffset - usersPageSize); loadUsers(); });
+document.querySelector('#users-next').addEventListener('click', () => { usersOffset += usersPageSize; loadUsers(); });
+document.querySelector('#users-list').addEventListener('click', async (event) => {
+  const statusButton = event.target.closest('[data-user-status]');
+  const roleButton = event.target.closest('[data-user-role]');
+  if (!statusButton && !roleButton) return;
+  const userId = Number((statusButton || roleButton).dataset.userStatus || (statusButton || roleButton).dataset.userRole);
+  const user = currentUsers.find((item) => item.id === userId);
+  if (!user) return;
+  if (statusButton) {
+    const nextActive = !user.is_active;
+    const operation = nextActive ? 'activate' : 'suspend';
+    if (!window.confirm(`${operation[0].toUpperCase()}${operation.slice(1)} ${user.name}'s account?`)) return;
+    try {
+      await adminApi(`/admin/users/${userId}/status`, { method: 'PATCH', body: JSON.stringify({ is_active: nextActive }) });
+      document.querySelector('#users-message').textContent = `Account ${nextActive ? 'activated' : 'suspended'}.`;
+      await Promise.all([loadUsers(), loadOverview()]);
+    } catch (error) { document.querySelector('#users-message').textContent = error.message; }
+  } else {
+    const nextRole = user.role === 'admin' ? 'student' : 'admin';
+    if (!window.confirm(`Change ${user.name}'s role to ${nextRole}?`)) return;
+    try {
+      await adminApi(`/admin/users/${userId}/role`, { method: 'PATCH', body: JSON.stringify({ role: nextRole }) });
+      document.querySelector('#users-message').textContent = `Account role changed to ${nextRole}.`;
+      await loadUsers();
+    } catch (error) { document.querySelector('#users-message').textContent = error.message; }
+  }
+});
 
 startAdminStudio();
