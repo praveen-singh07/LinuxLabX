@@ -51,7 +51,12 @@ def get_current_user(
             algorithms=[settings.jwt_algorithm],
         )
         subject = payload.get("sub")
-        if not isinstance(subject, str) or not subject.isdigit():
+        token_role = payload.get("role")
+        if (
+            not isinstance(subject, str)
+            or not subject.isdigit()
+            or not isinstance(token_role, str)
+        ):
             raise credentials_exception
         user_id = int(subject)
     except (JWTError, ValueError):
@@ -65,6 +70,8 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is inactive",
         )
+    if token_role != user.role:
+        raise credentials_exception
     return user
 
 

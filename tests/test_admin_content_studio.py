@@ -55,3 +55,4 @@ def test_admin_studio_page_loads_for_signed_out_visitors(client):
 
     assert response.status_code == 200
     assert "Admin Content Studio" in response.text
+    assert "User management" in response.text
