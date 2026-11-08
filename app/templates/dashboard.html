@@ -50,13 +50,14 @@
       <section id="dashboard-content" class="is-hidden">
         <div class="welcome-row">
           <div><p class="eyebrow">WELCOME BACK</p><h2 id="welcome-title">Your learning journey</h2></div>
-          <button id="logout-button" class="button button-quiet" type="button">Sign out</button>
+          <div class="welcome-actions"><a id="admin-studio-link" class="button button-quiet is-hidden" href="/app/admin">Admin Content Studio</a><button id="logout-button" class="button button-quiet" type="button">Sign out</button></div>
         </div>
         <div class="stat-grid" aria-label="Learning summary">
           <article class="stat-card"><span class="stat-icon xp-icon">✦</span><div><strong id="stat-xp">0 XP</strong><span id="stat-level">Level 1</span></div></article>
           <article class="stat-card"><span class="stat-icon lesson-icon">⌘</span><div><strong id="stat-lessons">0</strong><span>Lessons completed</span></div></article>
           <article class="stat-card"><span class="stat-icon practice-icon">✓</span><div><strong id="stat-practice">0</strong><span>Practice exercises</span></div></article>
           <article class="stat-card"><span class="stat-icon quiz-icon">▤</span><div><strong id="stat-activities">0</strong><span>Quizzes &amp; challenges</span></div></article>
+          <article class="stat-card streak-stat"><span class="stat-icon streak-icon">🔥</span><div><strong id="stat-streak">0 days</strong><span id="streak-best">Best: 0 days</span></div></article>
         </div>
         <section class="progress-panel" aria-labelledby="progress-title">
           <div class="progress-copy"><div><p class="eyebrow">LESSON PROGRESS</p><h2 id="progress-title">Keep your momentum</h2></div><strong id="progress-label">0%</strong></div>
@@ -103,6 +104,11 @@
             <h3>Recent attempts</h3>
             <div id="challenge-history-list"></div>
           </div>
+        </section>
+        <section class="leaderboard-section" aria-labelledby="leaderboard-title">
+          <div class="section-heading"><div><p class="eyebrow">LEARN TOGETHER</p><h2 id="leaderboard-title">Global leaderboard</h2></div><span id="leaderboard-rank" class="muted-label"></span></div>
+          <div id="leaderboard-list" class="leaderboard-list"></div>
+          <p id="leaderboard-empty" class="empty-state is-hidden">Leaderboard will appear as learners earn XP.</p>
         </section>
         <section id="achievements" class="achievement-preview">
           <div><p class="eyebrow">COLLECT YOUR MILESTONES</p><h2>My Achievements</h2><p id="achievement-summary" class="hero-copy">Your badges appear here as you learn.</p></div>

@@ -61,6 +61,16 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .lesson-icon { color: #81c4ff; background: #1b477035; }
 .practice-icon { color: #8ce0b1; background: #1b553535; }
 .quiz-icon { color: #d8a8ff; background: #55337435; }
+.streak-icon { color: #ffb079; background: #553625; }
+.leaderboard-section { padding: 0 0 42px; }
+.leaderboard-list { display: grid; gap: 8px; }
+.leaderboard-row { display: grid; grid-template-columns: 44px minmax(0,1fr) 90px 90px; align-items: center; gap: 12px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 11px; background: #111927; }
+.leaderboard-row.is-you { border-color: #6eaee8; background: linear-gradient(100deg,#182b3b,#111927); }
+.leaderboard-place { color: var(--gold); font: 700 14px 'Space Grotesk',sans-serif; }
+.leaderboard-name { overflow: hidden; color: var(--text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.leaderboard-name b { color: #9de3b3; font-size: 10px; }
+.leaderboard-level { color: var(--muted); font-size: 10px; }
+.leaderboard-xp { color: #9de3b3; font-size: 12px; text-align: right; }
 .stat-card strong, .stat-card div > span { display: block; }
 .stat-card strong { font: 700 18px 'Space Grotesk', sans-serif; }
 .stat-card div > span { margin-top: 4px; color: var(--muted); font-size: 10px; }
@@ -231,6 +241,9 @@ footer span { padding: 0 4px; color: var(--gold); }
   .stat-icon { width: 32px; height: 32px; flex-basis: 32px; border-radius: 10px; }
   .stat-card strong { font-size: 15px; }
   .stat-card div > span { font-size: 9px; }
+  .leaderboard-row { grid-template-columns: 34px minmax(0,1fr) 60px 65px; gap: 6px; padding: 11px 9px; }
+  .leaderboard-level { font-size: 9px; }
+  .leaderboard-xp { font-size: 10px; }
   .path-grid { grid-template-columns: 1fr; }
   .quiz-grid { grid-template-columns: 1fr; }
   .practice-grid { grid-template-columns: 1fr; }

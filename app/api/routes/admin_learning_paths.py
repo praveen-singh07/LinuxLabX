@@ -82,6 +82,23 @@ def admin_list_topics(
     return list_topics(db, path_id)
 
 
+@router.get("/topics/{topic_id}/lessons")
+def admin_list_topic_lessons(
+    topic_id: int, db: Session = Depends(get_db), _admin: User = Depends(require_admin)
+):
+    topic = get_topic(db, topic_id)
+    if topic is None:
+        raise HTTPException(status_code=404, detail="Topic not found")
+    return [
+        {
+            "lesson_id": link.lesson_id,
+            "title": link.lesson.title,
+            "display_order": link.display_order,
+        }
+        for link in topic.lesson_links
+    ]
+
+
 @router.post(
     "/{path_id}/topics",
     response_model=TopicAdminResponse,

@@ -84,6 +84,7 @@ authForm.addEventListener('submit', async (event) => {
 
 document.querySelector('#logout-button').addEventListener('click', () => {
   localStorage.removeItem(TOKEN_KEY);
+  document.querySelector('#admin-studio-link').classList.add('is-hidden');
   dashboard.classList.add('is-hidden');
   collection.classList.add('is-hidden');
   authPanel.classList.remove('is-hidden');
@@ -597,6 +598,23 @@ function celebrateBadges(badges) {
   dialog.showModal();
 }
 
+function renderGamification(streak, leaderboard) {
+  document.querySelector('#stat-streak').textContent = `${streak.current_streak} ${streak.current_streak === 1 ? 'day' : 'days'}`;
+  document.querySelector('#streak-best').textContent = `Best: ${streak.longest_streak} days · ${streak.active_days_this_week}/7 this week`;
+  const list = document.querySelector('#leaderboard-list');
+  const entries = leaderboard.entries || [];
+  document.querySelector('#leaderboard-empty').classList.toggle('is-hidden', entries.length > 0);
+  list.innerHTML = entries.map((entry) => `
+    <article class="leaderboard-row ${entry.is_current_user ? 'is-you' : ''}">
+      <span class="leaderboard-place">#${entry.rank}</span>
+      <span class="leaderboard-name">${escapeHTML(entry.name)}${entry.is_current_user ? ' <b>(you)</b>' : ''}</span>
+      <span class="leaderboard-level">Level ${entry.level}</span>
+      <strong class="leaderboard-xp">${entry.total_xp} XP</strong>
+    </article>`).join('');
+  document.querySelector('#leaderboard-rank').textContent = leaderboard.current_user_rank
+    ? `Your rank: #${leaderboard.current_user_rank}` : 'Your rank will appear after earning XP';
+}
+
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
   try {
@@ -609,6 +627,7 @@ async function loadDashboard(celebrateNew = false) {
     authPanel.classList.add('is-hidden');
     dashboard.classList.remove('is-hidden');
     collection.classList.remove('is-hidden');
+    document.querySelector('#admin-studio-link').classList.toggle('is-hidden', profile.role !== 'admin' || !profile.is_active);
     document.querySelector('#welcome-title').textContent = `Welcome, ${profile.name}`;
     document.querySelector('#collection-title').textContent = `${profile.name}'s collection`;
     document.querySelector('#stat-xp').textContent = `${summary.xp.total_xp} XP`;
@@ -626,6 +645,19 @@ async function loadDashboard(celebrateNew = false) {
     renderPractice(exercises, practiceHistory);
     renderChallenges(challenges, challengeHistory);
     renderBadges(badges.achievements);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const utcOffsetMinutes = new Date().getTimezoneOffset();
+    const gamification = await Promise.allSettled([
+      api(`/gamification/streak?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
+      api('/gamification/leaderboard?limit=10'),
+    ]);
+    if (gamification.every((result) => result.status === 'fulfilled')) {
+      renderGamification(gamification[0].value, gamification[1].value);
+    } else {
+      document.querySelector('#stat-streak').textContent = '—';
+      document.querySelector('#streak-best').textContent = 'Streak unavailable';
+      document.querySelector('#leaderboard-rank').textContent = 'Leaderboard unavailable';
+    }
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
 
@@ -643,6 +675,7 @@ async function loadDashboard(celebrateNew = false) {
     localStorage.removeItem(TOKEN_KEY);
     dashboard.classList.add('is-hidden');
     collection.classList.add('is-hidden');
+    document.querySelector('#admin-studio-link').classList.add('is-hidden');
     authPanel.classList.remove('is-hidden');
     authMessage.textContent = error.message;
   }
