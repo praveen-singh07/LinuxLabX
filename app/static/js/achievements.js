@@ -18,6 +18,7 @@ const quizDialog = document.querySelector('#quiz-dialog');
 const practiceDialog = document.querySelector('#practice-dialog');
 const challengeDialog = document.querySelector('#challenge-dialog');
 let registerMode = false;
+let currentProfile = null;
 let currentLesson = null;
 let currentQuiz = null;
 let pendingQuizBadges = [];
@@ -40,7 +41,13 @@ async function api(path, options = {}) {
   if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(path, { ...options, headers });
   const payload = response.status === 204 ? null : await response.json();
-  if (!response.ok) throw new Error(payload?.detail || 'Request could not be completed.');
+  if (!response.ok) {
+    const detail = payload?.detail;
+    const message = typeof detail === 'string'
+      ? detail
+      : Array.isArray(detail) ? detail.map((item) => item.msg).join(' ') : 'Request could not be completed.';
+    throw new Error(message);
+  }
   return payload;
 }
 
@@ -84,11 +91,66 @@ authForm.addEventListener('submit', async (event) => {
 
 document.querySelector('#logout-button').addEventListener('click', () => {
   localStorage.removeItem(TOKEN_KEY);
+  currentProfile = null;
   document.querySelector('#admin-studio-link').classList.add('is-hidden');
   dashboard.classList.add('is-hidden');
   collection.classList.add('is-hidden');
   authPanel.classList.remove('is-hidden');
   document.querySelector('#unlocked-count').textContent = '—';
+});
+
+const settingsDialog = document.querySelector('#account-settings-dialog');
+const profileForm = document.querySelector('#profile-form');
+const passwordForm = document.querySelector('#password-form');
+const settingsMessage = document.querySelector('#settings-message');
+
+document.querySelector('#account-settings-button').addEventListener('click', () => {
+  if (!currentProfile) return;
+  profileForm.elements.name.value = currentProfile.name;
+  document.querySelector('#profile-email').value = currentProfile.email;
+  passwordForm.reset();
+  settingsMessage.textContent = '';
+  settingsMessage.style.color = '#9de3b3';
+  settingsDialog.showModal();
+});
+document.querySelector('.account-settings-close').addEventListener('click', () => settingsDialog.close());
+
+profileForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  settingsMessage.style.color = '#ff9f9f';
+  try {
+    const result = await api('/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify({ name: profileForm.elements.name.value.trim() }),
+    });
+    currentProfile = result;
+    document.querySelector('#welcome-title').textContent = `Welcome, ${result.name}`;
+    document.querySelector('#collection-title').textContent = `${result.name}'s collection`;
+    settingsMessage.style.color = '#9de3b3';
+    settingsMessage.textContent = 'Display name updated.';
+  } catch (error) {
+    settingsMessage.textContent = error.message;
+  }
+});
+
+passwordForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  settingsMessage.style.color = '#ff9f9f';
+  if (passwordForm.elements.new_password.value !== passwordForm.elements.confirm_new_password.value) {
+    settingsMessage.textContent = 'New password confirmation does not match.';
+    return;
+  }
+  try {
+    await api('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(Object.fromEntries(new FormData(passwordForm).entries())),
+    });
+    passwordForm.reset();
+    settingsMessage.style.color = '#9de3b3';
+    settingsMessage.textContent = 'Password changed successfully.';
+  } catch (error) {
+    settingsMessage.textContent = error.message;
+  }
 });
 
 document.querySelector('.dialog-close').addEventListener('click', () => document.querySelector('#unlock-dialog').close());
@@ -624,6 +686,7 @@ async function loadDashboard(celebrateNew = false) {
       api('/quizzes/attempts/me'), api('/practice'), api('/practice/attempts/me'),
       api('/challenges'), api('/challenges/attempts/me'),
     ]);
+    currentProfile = profile;
     authPanel.classList.add('is-hidden');
     dashboard.classList.remove('is-hidden');
     collection.classList.remove('is-hidden');

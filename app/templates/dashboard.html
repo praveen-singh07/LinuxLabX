@@ -50,7 +50,7 @@
       <section id="dashboard-content" class="is-hidden">
         <div class="welcome-row">
           <div><p class="eyebrow">WELCOME BACK</p><h2 id="welcome-title">Your learning journey</h2></div>
-          <div class="welcome-actions"><a id="admin-studio-link" class="button button-quiet is-hidden" href="/app/admin">Admin Content Studio</a><button id="logout-button" class="button button-quiet" type="button">Sign out</button></div>
+          <div class="welcome-actions"><a id="admin-studio-link" class="button button-quiet is-hidden" href="/app/admin">Admin Content Studio</a><button id="account-settings-button" class="button button-quiet" type="button">Account settings</button><button id="logout-button" class="button button-quiet" type="button">Sign out</button></div>
         </div>
         <div class="stat-grid" aria-label="Learning summary">
           <article class="stat-card"><span class="stat-icon xp-icon">✦</span><div><strong id="stat-xp">0 XP</strong><span id="stat-level">Level 1</span></div></article>
@@ -154,6 +154,23 @@
     <dialog id="unlock-dialog" class="unlock-dialog">
       <button class="dialog-close" type="button" aria-label="Close">×</button>
       <div id="unlock-content"></div>
+    </dialog>
+    <dialog id="account-settings-dialog" class="settings-dialog">
+      <button class="dialog-close account-settings-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">YOUR ACCOUNT</p><h2>Account settings</h2>
+      <p id="settings-message" class="settings-message" role="status"></p>
+      <form id="profile-form" class="settings-form">
+        <label>Display name<input id="profile-name" name="name" minlength="2" maxlength="100" autocomplete="name" required></label>
+        <label>Email address<input id="profile-email" type="email" readonly></label>
+        <button class="button button-primary" type="submit">Save name</button>
+      </form>
+      <form id="password-form" class="settings-form password-settings-form">
+        <h3>Change password</h3>
+        <label>Current password<input name="current_password" type="password" autocomplete="current-password" required></label>
+        <label>New password<input name="new_password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></label>
+        <label>Confirm new password<input name="confirm_new_password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></label>
+        <button class="button button-primary" type="submit">Update password</button>
+      </form>
     </dialog>
     <script src="/static/js/achievements.js" defer></script>
   </body>
