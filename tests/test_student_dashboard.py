@@ -63,6 +63,21 @@ def test_dashboard_page_and_static_assets_are_served(client):
     assert "Student Dashboard" in page.text
     assert script.status_code == 200
     assert "Learning paths" in page.text
+    assert "Global leaderboard" in page.text
+    assert "stat-streak" in page.text
+
+
+def test_admin_content_studio_page_and_assets_are_served(client):
+    page = client.get("/app/admin")
+    script = client.get("/static/js/admin.js")
+    styles = client.get("/static/css/admin.css")
+
+    assert page.status_code == 200
+    assert "Admin Content Studio" in page.text
+    assert "Challenges" in page.text
+    assert script.status_code == 200
+    assert "admin/quizzes" in script.text
+    assert styles.status_code == 200
 
 
 def test_dashboard_api_requires_authentication(client):

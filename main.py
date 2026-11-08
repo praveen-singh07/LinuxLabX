@@ -13,6 +13,7 @@ from app.api.routes.admin_quizzes import router as admin_quizzes_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.challenges import router as challenges_router
 from app.api.routes.dashboard import router as dashboard_router
+from app.api.routes.gamification import router as gamification_router
 from app.api.routes.learning_paths import router as learning_paths_router
 from app.api.routes.lesson_completion import router as lesson_completion_router
 from app.api.routes.lessons import router as lessons_router
@@ -43,6 +44,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth_router)
 app.include_router(achievements_router)
 app.include_router(dashboard_router)
+app.include_router(gamification_router)
 app.include_router(lessons_router)
 app.include_router(admin_lessons_router)
 app.include_router(learning_paths_router)
@@ -74,3 +76,8 @@ def achievements_page():
 @app.get("/app/dashboard", include_in_schema=False)
 def student_dashboard_page():
     return FileResponse(TEMPLATE_DIR / "dashboard.html")
+
+
+@app.get("/app/admin", include_in_schema=False)
+def admin_content_page():
+    return FileResponse(TEMPLATE_DIR / "admin.html")

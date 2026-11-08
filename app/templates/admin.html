@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1220">
+    <title>Admin Content Studio · LinuxLabX</title>
+    <link rel="stylesheet" href="/static/css/achievements.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+  </head>
+  <body>
+    <main class="page-shell admin-shell">
+      <header class="topbar">
+        <a class="brand" href="/app/dashboard"><span class="brand-mark">L<span>×</span></span><span>LinuxLab<span class="brand-accent">X</span></span></a>
+        <a class="button button-quiet" href="/app/dashboard">← Student dashboard</a>
+      </header>
+      <section class="hero admin-hero">
+        <div><p class="eyebrow">PLATFORM MANAGEMENT</p><h1>Admin Content Studio</h1><p class="hero-copy">Manage the learning content that powers lessons, quizzes, practice, and challenges.</p></div>
+        <div class="admin-stat"><strong id="content-total">—</strong><span>CONTENT ITEMS</span></div>
+      </section>
+      <section id="admin-denied" class="admin-denied is-hidden" role="status"><h2>Admin access required</h2><p>Sign in with an administrator account on the student dashboard, then open this page again.</p><a class="button button-primary" href="/app/dashboard">Go to dashboard</a></section>
+      <section id="admin-app" class="admin-app is-hidden">
+        <div class="admin-toolbar"><div><label for="content-type">Content type</label><select id="content-type" class="admin-select"><option value="paths">Learning paths</option><option value="topics">Topics</option><option value="lessons">Lessons</option><option value="quizzes">Quizzes</option><option value="practice">Practice</option><option value="challenges">Challenges</option></select></div><button id="new-content" class="button button-primary" type="button">＋ New item</button></div>
+        <p id="admin-message" class="admin-message" role="status"></p>
+        <div id="topic-path-filter" class="topic-path-filter is-hidden"><label for="topic-path">Topics in learning path</label><select id="topic-path" class="admin-select"></select></div>
+        <div class="admin-layout"><section class="admin-list-panel"><div class="admin-list-heading"><h2 id="list-title">Learning paths</h2><span id="list-count" class="muted-label"></span></div><div id="content-list" class="admin-content-list"></div><p id="list-empty" class="empty-state is-hidden">No content yet. Create your first item.</p></section><section class="admin-editor-panel"><div class="admin-editor-heading"><div><p class="eyebrow">CONTENT EDITOR</p><h2 id="editor-title">Choose an item</h2></div></div><form id="content-form" class="admin-form is-hidden"></form><div id="editor-empty" class="admin-empty"><span>✦</span><p>Select an item from the list or create a new one to edit its content.</p></div></section></div>
+        <section id="topic-link-panel" class="topic-link-panel is-hidden"><div><p class="eyebrow">BUILD YOUR LEARNING PATH</p><h2>Link lesson to selected topic</h2><p class="muted-label">Choose a topic and an existing lesson. Lesson IDs are shown in the Lessons list.</p></div><div class="topic-link-controls"><select id="link-topic" class="admin-select" aria-label="Topic"></select><select id="link-lesson" class="admin-select" aria-label="Lesson"></select><input id="link-order" class="admin-input" type="number" min="0" value="0" aria-label="Display order"><button id="link-lesson-button" class="button button-primary" type="button">Link lesson</button></div><div id="linked-lessons" class="linked-lessons"></div></section>
+      </section>
+      <footer>LinuxLabX <span>·</span> Admin Content Studio</footer>
+    </main>
+    <script src="/static/js/admin.js" defer></script>
+  </body>
+</html>
