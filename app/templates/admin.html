@@ -20,7 +20,7 @@
       </section>
       <section id="admin-denied" class="admin-denied is-hidden" role="status"><h2>Admin access required</h2><p>Sign in with an administrator account on the student dashboard, then open this page again.</p><a class="button button-primary" href="/app/dashboard">Go to dashboard</a></section>
       <section id="admin-app" class="admin-app is-hidden">
-        <nav class="admin-tabs" aria-label="Admin sections"><button id="content-tab" class="admin-tab is-active" type="button">Learning content</button><button id="users-tab" class="admin-tab" type="button">Users &amp; overview</button></nav>
+        <nav class="admin-tabs" aria-label="Admin sections"><button id="content-tab" class="admin-tab is-active" type="button">Learning content</button><button id="users-tab" class="admin-tab" type="button">Users &amp; overview</button><button id="audit-tab" class="admin-tab" type="button">Audit log</button></nav>
         <div id="content-toolbar" class="admin-toolbar" data-content-view><div><label for="content-type">Content type</label><select id="content-type" class="admin-select"><option value="paths">Learning paths</option><option value="topics">Topics</option><option value="lessons">Lessons</option><option value="quizzes">Quizzes</option><option value="practice">Practice</option><option value="challenges">Challenges</option></select></div><button id="new-content" class="button button-primary" type="button">＋ New item</button></div>
         <p id="admin-message" class="admin-message" data-content-view role="status"></p>
         <div id="topic-path-filter" class="topic-path-filter is-hidden" data-content-view><label for="topic-path">Topics in learning path</label><select id="topic-path" class="admin-select"></select></div>
@@ -32,6 +32,12 @@
           <div class="user-filters"><label>Search accounts<input id="user-search" class="admin-input" type="search" placeholder="Name or email"></label><label>Status<select id="user-status" class="admin-select"><option value="all">All accounts</option><option value="active">Active</option><option value="suspended">Suspended</option></select></label><label>Role<select id="user-role" class="admin-select"><option value="all">All roles</option><option value="student">Student</option><option value="admin">Admin</option></select></label><button id="user-search-button" class="button button-primary" type="button">Apply filters</button></div>
           <p id="users-message" class="admin-message" role="status"></p><div id="users-list" class="users-list"></div><p id="users-empty" class="empty-state is-hidden">No accounts match these filters.</p>
           <div class="users-pagination"><button id="users-prev" class="button button-quiet" type="button">← Previous</button><span id="users-page" class="muted-label"></span><button id="users-next" class="button button-quiet" type="button">Next →</button></div>
+        </section>
+        <section id="audit-panel" class="audit-panel is-hidden">
+          <div class="users-panel-heading"><div><p class="eyebrow">ADMIN SECURITY HISTORY</p><h2>Account change audit</h2></div><span id="audit-count" class="muted-label"></span></div>
+          <div class="audit-filters"><label>Search actor or account<input id="audit-search" class="admin-input" type="search" placeholder="Name"></label><label>Action<select id="audit-action" class="admin-select"><option value="all">All account changes</option><option value="account.status">Status changes</option><option value="account.role">Role changes</option></select></label><button id="audit-search-button" class="button button-primary" type="button">Apply filters</button></div>
+          <p id="audit-message" class="admin-message" role="status"></p><div id="audit-list" class="audit-list"></div><p id="audit-empty" class="empty-state is-hidden">No account changes have been recorded yet.</p>
+          <div class="users-pagination"><button id="audit-prev" class="button button-quiet" type="button">← Previous</button><span id="audit-page" class="muted-label"></span><button id="audit-next" class="button button-quiet" type="button">Next →</button></div>
         </section>
       </section>
       <footer>LinuxLabX <span>·</span> Admin Content Studio</footer>
