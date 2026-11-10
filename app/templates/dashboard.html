@@ -59,6 +59,21 @@
           <article class="stat-card"><span class="stat-icon quiz-icon">▤</span><div><strong id="stat-activities">0</strong><span>Quizzes &amp; challenges</span></div></article>
           <article class="stat-card streak-stat"><span class="stat-icon streak-icon">🔥</span><div><strong id="stat-streak">0 days</strong><span id="streak-best">Best: 0 days</span></div></article>
         </div>
+        <section class="daily-goal-panel" aria-labelledby="daily-goal-title">
+          <div class="daily-goal-heading">
+            <div><p class="eyebrow">BUILD A DAILY HABIT</p><h2 id="daily-goal-title">Today's learning goal</h2></div>
+            <label for="daily-goal-target">Daily target</label>
+            <select id="daily-goal-target" class="daily-goal-select" aria-label="Daily XP goal">
+              <option value="25">25 XP · Easy</option><option value="50">50 XP · Steady</option>
+              <option value="75">75 XP · Focused</option><option value="100">100 XP · Ambitious</option>
+            </select>
+            <button id="daily-goal-save" class="button button-quiet" type="button">Save goal</button>
+          </div>
+          <div id="daily-goal-meter" class="daily-goal-track" role="progressbar" aria-label="Today's XP goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="daily-goal-fill"></span>
+          </div>
+          <div class="daily-goal-footer"><span id="daily-goal-summary">Loading today's progress…</span><span id="daily-goal-message" role="status"></span></div>
+        </section>
         <section class="progress-panel" aria-labelledby="progress-title">
           <div class="progress-copy"><div><p class="eyebrow">LESSON PROGRESS</p><h2 id="progress-title">Keep your momentum</h2></div><strong id="progress-label">0%</strong></div>
           <div class="progress-track"><span id="progress-fill"></span></div>

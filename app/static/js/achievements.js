@@ -660,9 +660,7 @@ function celebrateBadges(badges) {
   dialog.showModal();
 }
 
-function renderGamification(streak, leaderboard) {
-  document.querySelector('#stat-streak').textContent = `${streak.current_streak} ${streak.current_streak === 1 ? 'day' : 'days'}`;
-  document.querySelector('#streak-best').textContent = `Best: ${streak.longest_streak} days · ${streak.active_days_this_week}/7 this week`;
+function renderGamification(leaderboard) {
   const list = document.querySelector('#leaderboard-list');
   const entries = leaderboard.entries || [];
   document.querySelector('#leaderboard-empty').classList.toggle('is-hidden', entries.length > 0);
@@ -676,6 +674,40 @@ function renderGamification(streak, leaderboard) {
   document.querySelector('#leaderboard-rank').textContent = leaderboard.current_user_rank
     ? `Your rank: #${leaderboard.current_user_rank}` : 'Your rank will appear after earning XP';
 }
+
+function renderDailyGoal(goal) {
+  const target = document.querySelector('#daily-goal-target');
+  const percent = Math.max(0, Math.min(100, goal.progress_percent));
+  target.value = String(goal.target_xp);
+  document.querySelector('#daily-goal-fill').style.width = `${percent}%`;
+  document.querySelector('#daily-goal-meter').setAttribute('aria-valuenow', String(percent));
+  document.querySelector('#daily-goal-summary').textContent = goal.is_complete
+    ? `Goal complete · ${goal.earned_xp} of ${goal.target_xp} XP earned today`
+    : `${goal.earned_xp} of ${goal.target_xp} XP today · ${goal.remaining_xp} XP to go`;
+}
+
+async function saveDailyGoal() {
+  const message = document.querySelector('#daily-goal-message');
+  const button = document.querySelector('#daily-goal-save');
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const utcOffsetMinutes = new Date().getTimezoneOffset();
+  button.disabled = true;
+  message.textContent = '';
+  try {
+    const goal = await api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`, {
+      method: 'PUT',
+      body: JSON.stringify({ target_xp: Number(document.querySelector('#daily-goal-target').value) }),
+    });
+    renderDailyGoal(goal);
+    message.textContent = 'Daily goal saved.';
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.querySelector('#daily-goal-save').addEventListener('click', saveDailyGoal);
 
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
@@ -713,14 +745,22 @@ async function loadDashboard(celebrateNew = false) {
     const gamification = await Promise.allSettled([
       api(`/gamification/streak?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api('/gamification/leaderboard?limit=10'),
+      api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
     ]);
-    if (gamification.every((result) => result.status === 'fulfilled')) {
-      renderGamification(gamification[0].value, gamification[1].value);
+    if (gamification[0].status === 'fulfilled') {
+      document.querySelector('#stat-streak').textContent = `${gamification[0].value.current_streak} ${gamification[0].value.current_streak === 1 ? 'day' : 'days'}`;
+      document.querySelector('#streak-best').textContent = `Best: ${gamification[0].value.longest_streak} days · ${gamification[0].value.active_days_this_week}/7 this week`;
     } else {
       document.querySelector('#stat-streak').textContent = '—';
       document.querySelector('#streak-best').textContent = 'Streak unavailable';
+    }
+    if (gamification[1].status === 'fulfilled') {
+      renderGamification(gamification[1].value);
+    } else {
       document.querySelector('#leaderboard-rank').textContent = 'Leaderboard unavailable';
     }
+    if (gamification[2].status === 'fulfilled') renderDailyGoal(gamification[2].value);
+    else document.querySelector('#daily-goal-summary').textContent = 'Daily goal unavailable right now.';
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
 
