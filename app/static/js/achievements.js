@@ -686,6 +686,18 @@ function renderDailyGoal(goal) {
     : `${goal.earned_xp} of ${goal.target_xp} XP today · ${goal.remaining_xp} XP to go`;
 }
 
+function renderStreakCalendar(calendar) {
+  const grid = document.querySelector('#streak-calendar-grid');
+  document.querySelector('#streak-calendar-message').textContent = '';
+  document.querySelector('#streak-calendar-count').textContent = `${calendar.active_days} active ${calendar.active_days === 1 ? 'day' : 'days'} in the last four weeks`;
+  grid.innerHTML = calendar.days.map((day) => {
+    const state = day.is_active ? 'active' : day.is_future ? 'upcoming' : 'rest';
+    const label = `${day.day}${day.is_active ? ', learning activity' : day.is_future ? ', upcoming' : ', no activity'}`;
+    const dateLabel = day.day.slice(-2).replace(/^0/, '');
+    return `<span class="streak-calendar-day is-${state}${day.is_today ? ' is-today' : ''}" role="listitem" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}">${dateLabel}</span>`;
+  }).join('');
+}
+
 async function saveDailyGoal() {
   const message = document.querySelector('#daily-goal-message');
   const button = document.querySelector('#daily-goal-save');
@@ -746,6 +758,7 @@ async function loadDashboard(celebrateNew = false) {
       api(`/gamification/streak?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api('/gamification/leaderboard?limit=10'),
       api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
+      api(`/gamification/activity-calendar?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
     ]);
     if (gamification[0].status === 'fulfilled') {
       document.querySelector('#stat-streak').textContent = `${gamification[0].value.current_streak} ${gamification[0].value.current_streak === 1 ? 'day' : 'days'}`;
@@ -761,6 +774,12 @@ async function loadDashboard(celebrateNew = false) {
     }
     if (gamification[2].status === 'fulfilled') renderDailyGoal(gamification[2].value);
     else document.querySelector('#daily-goal-summary').textContent = 'Daily goal unavailable right now.';
+    if (gamification[3].status === 'fulfilled') renderStreakCalendar(gamification[3].value);
+    else {
+      document.querySelector('#streak-calendar-count').textContent = 'Calendar unavailable';
+      document.querySelector('#streak-calendar-grid').innerHTML = '';
+      document.querySelector('#streak-calendar-message').textContent = 'Activity calendar is temporarily unavailable.';
+    }
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
 
