@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes.achievements import router as achievements_router
 from app.api.routes.admin_challenges import router as admin_challenges_router
 from app.api.routes.admin_audit import router as admin_audit_router
+from app.api.routes.admin_analytics import router as admin_analytics_router
 from app.api.routes.admin_learning_paths import router as admin_learning_paths_router
 from app.api.routes.admin_lessons import router as admin_lessons_router
 from app.api.routes.admin_practice import router as admin_practice_router
@@ -58,6 +59,7 @@ app.include_router(quizzes_router)
 app.include_router(admin_quizzes_router)
 app.include_router(admin_users_router)
 app.include_router(admin_audit_router)
+app.include_router(admin_analytics_router)
 app.include_router(practice_router)
 app.include_router(admin_practice_router)
 app.include_router(challenges_router)

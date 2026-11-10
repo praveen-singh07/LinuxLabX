@@ -50,6 +50,18 @@
 .overview-cards article { display: grid; gap: 7px; min-height: 81px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(145deg,#151f30,#101725); }
 .overview-cards article span { color: var(--muted); font-size: 10px; }
 .overview-cards article strong { color: #9de3b3; font: 700 21px 'Space Grotesk',sans-serif; }
+.analytics-panel { margin: 0 0 27px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg,#151f30,#101725); }
+.analytics-panel .users-panel-heading { margin-bottom: 13px; }
+.analytics-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin-bottom: 15px; }
+.analytics-stats article { display: grid; gap: 5px; padding: 11px 13px; border: 1px solid #2d3b50; border-radius: 10px; background: #0d1623; }
+.analytics-stats article span { color: var(--muted); font-size: 10px; }
+.analytics-stats article strong { color: #9de3b3; font: 700 18px 'Space Grotesk',sans-serif; }
+.analytics-chart { display: grid; gap: 7px; }
+.analytics-row { display: grid; grid-template-columns: 100px minmax(60px,1fr) minmax(210px,1.1fr); align-items: center; gap: 10px; font-size: 10px; }
+.analytics-day,.analytics-row-summary { color: var(--muted); }
+.analytics-row-summary { text-align: right; }
+.analytics-bar-track { height: 8px; overflow: hidden; border-radius: 99px; background: #273348; }
+.analytics-bar-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#438fd8,#8acbff); }
 .users-panel-heading { display: flex; justify-content: space-between; align-items: end; gap: 15px; margin-bottom: 15px; }
 .users-panel-heading h2 { margin: 0; font-size: 21px; }
 .users-panel-heading .eyebrow { margin-bottom: 6px; }
@@ -85,4 +97,4 @@
 .linked-lessons { display: grid; gap: 7px; min-width: 100%; }
 .linked-lesson-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 1px solid #2d3b50; border-radius: 8px; color: #c3d0e0; background: #0d1623; font-size: 11px; }
 @media(max-width:780px) { .admin-layout { grid-template-columns: 1fr; } .topic-link-panel { align-items: stretch; flex-direction: column; } .topic-link-controls { min-width: 0; grid-template-columns: 1fr 1fr; } .user-filters { grid-template-columns: 1fr 1fr; } .admin-user-row { grid-template-columns: minmax(170px,1fr) 75px 85px; } .user-actions { grid-column: 1/-1; justify-content: flex-start; } .audit-filters { grid-template-columns: 1fr 1fr; } .audit-row { grid-template-columns: 32px minmax(0,1fr) auto; } .audit-row .activity-time { grid-column: 2/-1; } }
-@media(max-width:520px) { .admin-hero { align-items: start; } .admin-stat { min-width: 90px; padding: 12px; } .admin-toolbar { align-items: stretch; flex-direction: column; } .admin-select { min-width: 0; } .admin-form { grid-template-columns: 1fr; } .admin-field.wide,.admin-form-actions { grid-column: auto; } .topic-link-controls { grid-template-columns: 1fr; } .overview-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } .user-filters,.audit-filters { grid-template-columns: 1fr; } .admin-user-row { grid-template-columns: 1fr 75px; gap: 8px; } .user-role-pill { grid-row: 2; } .admin-user-row > .admin-badge { grid-row: 2; } .user-actions { grid-column: 1/-1; } .audit-row { grid-template-columns: 30px minmax(0,1fr); gap: 8px; } .audit-transition,.audit-row .activity-time { grid-column: 2; justify-self: start; } }
+@media(max-width:520px) { .admin-hero { align-items: start; } .admin-stat { min-width: 90px; padding: 12px; } .admin-toolbar { align-items: stretch; flex-direction: column; } .admin-select { min-width: 0; } .admin-form { grid-template-columns: 1fr; } .admin-field.wide,.admin-form-actions { grid-column: auto; } .topic-link-controls { grid-template-columns: 1fr; } .overview-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } .analytics-stats { grid-template-columns: 1fr; } .analytics-row { grid-template-columns: 70px minmax(40px,1fr); gap: 6px; font-size: 9px; } .analytics-row-summary { grid-column: 2; text-align: left; } .user-filters,.audit-filters { grid-template-columns: 1fr; } .admin-user-row { grid-template-columns: 1fr 75px; gap: 8px; } .user-role-pill { grid-row: 2; } .admin-user-row > .admin-badge { grid-row: 2; } .user-actions { grid-column: 1/-1; } .audit-row { grid-template-columns: 30px minmax(0,1fr); gap: 8px; } .audit-transition,.audit-row .activity-time { grid-column: 2; justify-self: start; } }
