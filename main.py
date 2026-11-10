@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.achievements import router as achievements_router
 from app.api.routes.admin_challenges import router as admin_challenges_router
+from app.api.routes.admin_audit import router as admin_audit_router
 from app.api.routes.admin_learning_paths import router as admin_learning_paths_router
 from app.api.routes.admin_lessons import router as admin_lessons_router
 from app.api.routes.admin_practice import router as admin_practice_router
@@ -23,6 +24,7 @@ from app.api.routes.quizzes import router as quizzes_router
 from app.core.database import Base, engine
 from app.models.challenge import Challenge, ChallengeAttempt  # noqa: F401
 from app.models.achievement import Achievement, UserAchievement  # noqa: F401
+from app.models.admin_audit import AdminAuditLog  # noqa: F401
 from app.models.learning_path import LearningPath  # noqa: F401
 from app.models.lesson_completion import LessonCompletion  # noqa: F401
 from app.models.practice import PracticeAttempt, PracticeExercise  # noqa: F401
@@ -54,6 +56,7 @@ app.include_router(lesson_completion_router)
 app.include_router(quizzes_router)
 app.include_router(admin_quizzes_router)
 app.include_router(admin_users_router)
+app.include_router(admin_audit_router)
 app.include_router(practice_router)
 app.include_router(admin_practice_router)
 app.include_router(challenges_router)
