@@ -12,6 +12,21 @@ class StreakResponse(BaseModel):
     timezone: str
 
 
+class StreakCalendarDay(BaseModel):
+    day: date
+    is_active: bool
+    is_today: bool
+    is_future: bool
+
+
+class StreakCalendarResponse(BaseModel):
+    start_date: date
+    end_date: date
+    active_days: int
+    timezone: str
+    days: list[StreakCalendarDay]
+
+
 class LeaderboardEntry(BaseModel):
     rank: int
     user_id: int

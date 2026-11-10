@@ -15,6 +15,8 @@ from app.models.xp_event import XPEvent
 from app.schemas.gamification import (
     LeaderboardEntry,
     LeaderboardResponse,
+    StreakCalendarDay,
+    StreakCalendarResponse,
     StreakResponse,
 )
 from app.schemas.daily_learning_goal import DailyLearningGoalResponse
@@ -103,6 +105,81 @@ def set_daily_learning_goal(
     return get_daily_learning_goal(db, user_id, timezone_name, utc_offset_minutes)
 
 
+def _get_activity_timestamps(
+    db: Session,
+    user_id: int,
+    start_utc: datetime | None = None,
+    end_utc: datetime | None = None,
+) -> list[datetime]:
+    def read_timestamps(model, timestamp_column, *criteria) -> list[datetime]:
+        statement = select(timestamp_column).where(model.user_id == user_id, *criteria)
+        if start_utc is not None and end_utc is not None:
+            start_bound = start_utc
+            end_bound = end_utc
+            if not getattr(timestamp_column.type, "timezone", False):
+                start_bound = start_bound.replace(tzinfo=None)
+                end_bound = end_bound.replace(tzinfo=None)
+            statement = statement.where(
+                timestamp_column >= start_bound,
+                timestamp_column < end_bound,
+            )
+        return list(db.scalars(statement).all())
+
+    return (
+        read_timestamps(XPEvent, XPEvent.created_at, XPEvent.event_type == "completion")
+        + read_timestamps(QuizAttempt, QuizAttempt.submitted_at)
+        + read_timestamps(
+            PracticeAttempt,
+            PracticeAttempt.submitted_at,
+            PracticeAttempt.is_correct.is_(True),
+        )
+        + read_timestamps(
+            ChallengeAttempt,
+            ChallengeAttempt.submitted_at,
+            ChallengeAttempt.is_correct.is_(True),
+        )
+    )
+
+
+def get_streak_calendar(
+    db: Session,
+    user_id: int,
+    timezone_name: str,
+    utc_offset_minutes: int | None = None,
+) -> StreakCalendarResponse:
+    timezone = _resolve_timezone(timezone_name, utc_offset_minutes)
+    today = datetime.now(UTC).astimezone(timezone).date()
+    start_date = today - timedelta(days=today.weekday() + 21)
+    end_date = start_date + timedelta(days=27)
+    start_utc = datetime.combine(start_date, time.min, tzinfo=timezone).astimezone(UTC)
+    end_utc = datetime.combine(
+        end_date + timedelta(days=1), time.min, tzinfo=timezone
+    ).astimezone(UTC)
+    active_dates = {
+        (timestamp.replace(tzinfo=UTC) if timestamp.tzinfo is None else timestamp)
+        .astimezone(timezone)
+        .date()
+        for timestamp in _get_activity_timestamps(db, user_id, start_utc, end_utc)
+    }
+    days = [
+        StreakCalendarDay(
+            day=start_date + timedelta(days=index),
+            is_active=(start_date + timedelta(days=index)) in active_dates
+            and (start_date + timedelta(days=index)) <= today,
+            is_today=(start_date + timedelta(days=index)) == today,
+            is_future=(start_date + timedelta(days=index)) > today,
+        )
+        for index in range(28)
+    ]
+    return StreakCalendarResponse(
+        start_date=start_date,
+        end_date=end_date,
+        active_days=sum(day.is_active for day in days),
+        timezone=timezone_name,
+        days=days,
+    )
+
+
 def get_streak(
     db: Session,
     user_id: int,
@@ -111,37 +188,7 @@ def get_streak(
 ) -> StreakResponse:
     timezone = _resolve_timezone(timezone_name, utc_offset_minutes)
 
-    timestamps: list[datetime] = list(
-        db.scalars(
-            select(XPEvent.created_at)
-            .where(
-                XPEvent.user_id == user_id,
-                XPEvent.event_type == "completion",
-            )
-            .order_by(XPEvent.created_at.desc())
-        ).all()
-    )
-    timestamps.extend(
-        db.scalars(
-            select(QuizAttempt.submitted_at).where(QuizAttempt.user_id == user_id)
-        ).all()
-    )
-    timestamps.extend(
-        db.scalars(
-            select(PracticeAttempt.submitted_at).where(
-                PracticeAttempt.user_id == user_id,
-                PracticeAttempt.is_correct.is_(True),
-            )
-        ).all()
-    )
-    timestamps.extend(
-        db.scalars(
-            select(ChallengeAttempt.submitted_at).where(
-                ChallengeAttempt.user_id == user_id,
-                ChallengeAttempt.is_correct.is_(True),
-            )
-        ).all()
-    )
+    timestamps = _get_activity_timestamps(db, user_id)
     active_dates = sorted(
         {
             (timestamp.replace(tzinfo=UTC) if timestamp.tzinfo is None else timestamp)
