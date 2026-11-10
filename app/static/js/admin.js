@@ -297,7 +297,7 @@ function switchAdminView(view) {
   document.querySelector('#users-tab').classList.toggle('is-active', showUsers);
   document.querySelector('#audit-tab').classList.toggle('is-active', showAudit);
   if (showUsers) {
-    Promise.allSettled([loadOverview(), loadUsers()]);
+    Promise.allSettled([loadOverview(), loadUsers(), loadAnalytics()]);
   } else if (showAudit) {
     loadAuditLogs();
   } else {
@@ -317,6 +317,28 @@ async function loadOverview() {
     document.querySelector('#overview-activities').textContent = overview.practice_exercises + overview.challenges;
   } catch (error) {
     document.querySelector('#users-message').textContent = error.message;
+  }
+}
+
+async function loadAnalytics() {
+  const message = document.querySelector('#analytics-message');
+  message.textContent = '';
+  try {
+    const result = await adminApi('/admin/analytics?days=7');
+    document.querySelector('#analytics-learners').textContent = result.active_learners;
+    document.querySelector('#analytics-activities').textContent = result.activities;
+    document.querySelector('#analytics-xp').textContent = `${result.xp_earned} XP`;
+    document.querySelector('#analytics-dates').textContent = `${result.start_date} — ${result.end_date}`;
+    const maxActivities = Math.max(1, ...result.daily.map((day) => day.activities));
+    document.querySelector('#analytics-chart').innerHTML = result.daily.map((day) => {
+      const date = new Date(`${day.day}T00:00:00`);
+      const label = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).format(date);
+      const width = Math.round((day.activities / maxActivities) * 100);
+      return `<div class="analytics-row"><span class="analytics-day">${safeText(label)}</span><div class="analytics-bar-track"><span style="width:${width}%"></span></div><span class="analytics-row-summary">${day.activities} activities · ${day.active_learners} learners · ${day.xp_earned} XP</span></div>`;
+    }).join('');
+  } catch (error) {
+    message.textContent = error.message;
+    document.querySelector('#analytics-chart').innerHTML = '';
   }
 }
 
@@ -408,7 +430,7 @@ document.querySelector('#users-list').addEventListener('click', async (event) =>
     try {
       await adminApi(`/admin/users/${userId}/status`, { method: 'PATCH', body: JSON.stringify({ is_active: nextActive }) });
       document.querySelector('#users-message').textContent = `Account ${nextActive ? 'activated' : 'suspended'}.`;
-      await Promise.all([loadUsers(), loadOverview()]);
+      await Promise.all([loadUsers(), loadOverview(), loadAnalytics()]);
     } catch (error) { document.querySelector('#users-message').textContent = error.message; }
   } else {
     const nextRole = user.role === 'admin' ? 'student' : 'admin';
@@ -416,7 +438,7 @@ document.querySelector('#users-list').addEventListener('click', async (event) =>
     try {
       await adminApi(`/admin/users/${userId}/role`, { method: 'PATCH', body: JSON.stringify({ role: nextRole }) });
       document.querySelector('#users-message').textContent = `Account role changed to ${nextRole}.`;
-      await loadUsers();
+      await Promise.all([loadUsers(), loadAnalytics()]);
     } catch (error) { document.querySelector('#users-message').textContent = error.message; }
   }
 });
