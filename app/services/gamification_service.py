@@ -1,10 +1,12 @@
-from datetime import UTC, datetime, timedelta, timezone as fixed_timezone
+from datetime import UTC, datetime, time, timedelta, timezone as fixed_timezone, tzinfo
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.challenge import ChallengeAttempt
+from app.models.daily_learning_goal import DailyLearningGoal
 from app.models.practice import PracticeAttempt
 from app.models.quiz_attempt import QuizAttempt
 from app.models.user import User
@@ -15,6 +17,90 @@ from app.schemas.gamification import (
     LeaderboardResponse,
     StreakResponse,
 )
+from app.schemas.daily_learning_goal import DailyLearningGoalResponse
+
+
+def _resolve_timezone(
+    timezone_name: str, utc_offset_minutes: int | None
+) -> tzinfo:
+    if timezone_name in {"UTC", "Etc/UTC", "GMT"}:
+        return UTC
+    try:
+        return ZoneInfo(timezone_name)
+    except (ZoneInfoNotFoundError, ValueError):
+        if utc_offset_minutes is None:
+            raise ValueError("Unknown timezone") from None
+        # Windows hosts may not have the IANA timezone database installed yet.
+        return fixed_timezone(timedelta(minutes=-utc_offset_minutes))
+
+
+def _get_or_create_daily_goal(db: Session, user_id: int) -> DailyLearningGoal:
+    goal = db.scalar(
+        select(DailyLearningGoal).where(DailyLearningGoal.user_id == user_id)
+    )
+    if goal is not None:
+        return goal
+
+    goal = DailyLearningGoal(user_id=user_id, target_xp=50)
+    try:
+        with db.begin_nested():
+            db.add(goal)
+            db.flush()
+    except IntegrityError:
+        goal = db.scalar(
+            select(DailyLearningGoal).where(DailyLearningGoal.user_id == user_id)
+        )
+        if goal is None:
+            raise
+    return goal
+
+
+def get_daily_learning_goal(
+    db: Session,
+    user_id: int,
+    timezone_name: str,
+    utc_offset_minutes: int | None = None,
+) -> DailyLearningGoalResponse:
+    timezone = _resolve_timezone(timezone_name, utc_offset_minutes)
+    goal = _get_or_create_daily_goal(db, user_id)
+    now_local = datetime.now(UTC).astimezone(timezone)
+    day_start = datetime.combine(now_local.date(), time.min, tzinfo=timezone)
+    next_day_start = day_start + timedelta(days=1)
+    # XPEvent timestamps are stored as naive UTC datetimes in the current schema.
+    start_utc = day_start.astimezone(UTC).replace(tzinfo=None)
+    end_utc = next_day_start.astimezone(UTC).replace(tzinfo=None)
+    earned_xp = db.scalar(
+        select(func.coalesce(func.sum(XPEvent.xp_amount), 0)).where(
+            XPEvent.user_id == user_id,
+            XPEvent.event_type == "completion",
+            XPEvent.created_at >= start_utc,
+            XPEvent.created_at < end_utc,
+        )
+    ) or 0
+    target_xp = goal.target_xp
+    return DailyLearningGoalResponse(
+        target_xp=target_xp,
+        earned_xp=earned_xp,
+        remaining_xp=max(0, target_xp - earned_xp),
+        progress_percent=min(100, int(earned_xp * 100 / target_xp)),
+        is_complete=earned_xp >= target_xp,
+        local_date=now_local.date(),
+        timezone=timezone_name,
+    )
+
+
+def set_daily_learning_goal(
+    db: Session,
+    user_id: int,
+    target_xp: int,
+    timezone_name: str,
+    utc_offset_minutes: int | None = None,
+) -> DailyLearningGoalResponse:
+    _resolve_timezone(timezone_name, utc_offset_minutes)
+    goal = _get_or_create_daily_goal(db, user_id)
+    goal.target_xp = target_xp
+    db.commit()
+    return get_daily_learning_goal(db, user_id, timezone_name, utc_offset_minutes)
 
 
 def get_streak(
@@ -23,17 +109,7 @@ def get_streak(
     timezone_name: str,
     utc_offset_minutes: int | None = None,
 ) -> StreakResponse:
-    if timezone_name in {"UTC", "Etc/UTC", "GMT"}:
-        timezone = UTC
-    else:
-        try:
-            timezone = ZoneInfo(timezone_name)
-        except (ZoneInfoNotFoundError, ValueError):
-            if utc_offset_minutes is None:
-                raise ValueError("Unknown timezone") from None
-            # Windows hosts may not have the IANA timezone database installed yet.
-            # The browser's live offset keeps streak day-boundaries usable meanwhile.
-            timezone = fixed_timezone(timedelta(minutes=-utc_offset_minutes))
+    timezone = _resolve_timezone(timezone_name, utc_offset_minutes)
 
     timestamps: list[datetime] = list(
         db.scalars(

@@ -25,6 +25,7 @@ from app.core.database import Base, engine
 from app.models.challenge import Challenge, ChallengeAttempt  # noqa: F401
 from app.models.achievement import Achievement, UserAchievement  # noqa: F401
 from app.models.admin_audit import AdminAuditLog  # noqa: F401
+from app.models.daily_learning_goal import DailyLearningGoal  # noqa: F401
 from app.models.learning_path import LearningPath  # noqa: F401
 from app.models.lesson_completion import LessonCompletion  # noqa: F401
 from app.models.practice import PracticeAttempt, PracticeExercise  # noqa: F401

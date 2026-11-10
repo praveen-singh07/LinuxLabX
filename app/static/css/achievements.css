@@ -75,6 +75,18 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .stat-card strong, .stat-card div > span { display: block; }
 .stat-card strong { font: 700 18px 'Space Grotesk', sans-serif; }
 .stat-card div > span { margin-top: 4px; color: var(--muted); font-size: 10px; }
+.daily-goal-panel { margin: 14px 0 16px; padding: 19px 22px; border: 1px solid #3b506d; border-radius: 15px; background: linear-gradient(115deg,#142437,#111a29 70%); }
+.daily-goal-heading { display: flex; align-items: end; gap: 9px; }
+.daily-goal-heading > div { flex: 1; }
+.daily-goal-heading .eyebrow { margin-bottom: 6px; }
+.daily-goal-heading h2 { margin: 0; font: 700 18px 'Space Grotesk',sans-serif; }
+.daily-goal-heading label { color: var(--muted); font-size: 10px; }
+.daily-goal-select { min-width: 145px; padding: 9px 10px; border: 1px solid #34445d; border-radius: 9px; color: var(--text); background: #101927; font: inherit; font-size: 11px; }
+.daily-goal-track { height: 10px; margin: 15px 0 9px; overflow: hidden; border-radius: 99px; background: #273348; }
+.daily-goal-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#d7a949,#ffe29a); transition: width .45s ease; }
+.daily-goal-footer { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 10px; }
+.daily-goal-footer [role=status] { color: #9de3b3; }
+.daily-goal-panel button:disabled { opacity: .55; cursor: wait; }
 .progress-panel { margin: 14px 0 44px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 15px; background: #111a29b8; }
 .progress-copy { display: flex; justify-content: space-between; align-items: end; gap: 18px; }
 .progress-copy .eyebrow { margin-bottom: 7px; }
@@ -249,6 +261,11 @@ footer span { padding: 0 4px; color: var(--gold); }
   .collection-count span:first-child { font-size: 24px; }
   .collection-count span:last-child { font-size: 7px; }
   .auth-panel { grid-template-columns: 1fr; gap: 22px; padding: 22px; }
+  .daily-goal-heading { align-items: stretch; flex-wrap: wrap; }
+  .daily-goal-heading > div { flex-basis: 100%; margin-bottom: 5px; }
+  .daily-goal-heading label { align-self: center; }
+  .daily-goal-select { flex: 1; min-width: 130px; }
+  .daily-goal-footer { flex-direction: column; gap: 5px; }
   .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
   .stat-card { min-height: 78px; padding: 12px; gap: 9px; }
   .stat-icon { width: 32px; height: 32px; flex-basis: 32px; border-radius: 10px; }
