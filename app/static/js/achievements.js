@@ -720,6 +720,9 @@ async function saveDailyGoal() {
 }
 
 document.querySelector('#daily-goal-save').addEventListener('click', saveDailyGoal);
+document.querySelector('#view-badges-link').addEventListener('click', () => {
+  document.querySelector('#badge-collection-details').open = true;
+});
 
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
