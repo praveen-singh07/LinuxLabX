@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
+from app.models.lesson import Lesson
 from app.schemas.lesson_completion import (
     LessonCompletionItem,
     LessonCompletionResponse,
@@ -12,6 +13,7 @@ from app.services.lesson_completion_service import (
     complete_published_lesson,
     list_user_completions,
 )
+from app.services.notification_service import create_badge_notifications, create_notification
 
 router = APIRouter(prefix="/lessons", tags=["Lesson Completion"])
 
@@ -32,6 +34,15 @@ def complete_lesson(
         )
     except LookupError:
         raise HTTPException(status_code=404, detail="Published lesson not found") from None
+    if not already_completed:
+        lesson_title = db.get(Lesson, lesson_id).title
+        create_notification(
+            db, current_user.id, "learning", "Lesson completed",
+            f"You completed {lesson_title} and earned {xp_awarded} XP. Keep the momentum going with your next lesson.",
+            f"lesson-completed:{lesson_id}", "/app/dashboard#learning-paths",
+        )
+        create_badge_notifications(db, current_user.id, newly_unlocked)
+        db.commit()
     return LessonCompletionResponse(
         lesson_id=completion.lesson_id,
         completed=True,

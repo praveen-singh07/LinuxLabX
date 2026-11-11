@@ -4,8 +4,10 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
+from app.models.challenge import Challenge
 from app.schemas.challenge import ChallengeAnswerSubmit, ChallengeHistoryItem, ChallengePublic, ChallengeResult
 from app.services.challenge_service import get_published_challenge, list_published_challenges, list_user_challenge_attempts, submit_challenge_answer
+from app.services.notification_service import create_badge_notifications, create_notification
 
 router = APIRouter(prefix="/challenges", tags=["Challenges"])
 
@@ -34,6 +36,16 @@ def submit_answer(challenge_id: int, data: ChallengeAnswerSubmit, db: Session = 
         attempt, xp_awarded, xp, progress, newly_unlocked = submit_challenge_answer(db, current_user.id, challenge_id, data.answer)
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from None
+    if attempt.is_correct:
+        challenge = db.get(Challenge, challenge_id)
+        create_notification(
+            db, current_user.id, "learning", "Linux challenge solved",
+            f"You solved {challenge.title} and earned {xp_awarded} XP. Ready for another scenario?",
+            f"challenge-solved:{attempt.id}", "/app/dashboard#challenges-title",
+        )
+    create_badge_notifications(db, current_user.id, newly_unlocked)
+    if attempt.is_correct or newly_unlocked:
+        db.commit()
     return ChallengeResult(
         attempt_id=attempt.id, challenge_id=challenge_id, is_correct=attempt.is_correct,
         feedback="Challenge completed!" if attempt.is_correct else "Not quite. Review the scenario and hints, then try again.",

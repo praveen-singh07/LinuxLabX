@@ -32,6 +32,9 @@ let activityItems = [];
 let activityOffset = 0;
 let activityHasMore = false;
 let activityFilter = 'all';
+const NOTIFICATION_PAGE_SIZE = 10;
+let notificationOffset = 0;
+let notificationHasMore = false;
 
 function escapeHTML(value) {
   return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -785,6 +788,118 @@ async function saveDailyGoal() {
 }
 
 document.querySelector('#daily-goal-save').addEventListener('click', saveDailyGoal);
+
+function renderNotificationCount(count) {
+  const badge = document.querySelector('#notification-unread-count');
+  const button = document.querySelector('#notifications-button');
+  badge.textContent = count > 99 ? '99+' : String(count);
+  badge.classList.toggle('is-hidden', count === 0);
+  button.setAttribute('aria-label', `Notifications, ${count} unread`);
+}
+
+function renderNotifications(items, append = false) {
+  const list = document.querySelector('#notifications-list');
+  const message = document.querySelector('#notifications-message');
+  if (!append && items.length === 0) {
+    list.innerHTML = '<div class="notifications-empty"><span>✦</span><strong>You are all caught up</strong><p>Lesson milestones and reminders will show up here.</p></div>';
+    return;
+  }
+  const html = items.map((item) => {
+    const icon = item.category === 'achievement' ? '✦' : item.category === 'reminder' ? '◷' : '↗';
+    const date = new Date(item.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const destination = typeof item.action_url === 'string' && item.action_url.startsWith('/') ? item.action_url : '';
+    return `<article class="notification-card ${item.is_read ? '' : 'is-unread'}" data-notification-id="${item.id}">
+      <span class="notification-icon notification-${escapeHTML(item.category)}" aria-hidden="true">${icon}</span>
+      <div class="notification-copy"><div class="notification-title-row"><h3>${escapeHTML(item.title)}</h3>${item.is_read ? '' : '<i aria-label="Unread"></i>'}</div><p>${escapeHTML(item.message)}</p><time>${escapeHTML(date)}</time>${destination ? `<a class="notification-action" href="${escapeHTML(destination)}">Open related section →</a>` : ''}</div>
+      ${item.is_read ? '' : `<button class="notification-mark-read" type="button" data-mark-notification="${item.id}" aria-label="Mark ${escapeHTML(item.title)} as read">Mark read</button>`}
+    </article>`;
+  }).join('');
+  if (append) list.insertAdjacentHTML('beforeend', html);
+  else list.innerHTML = html;
+  message.textContent = '';
+}
+
+async function loadNotifications(reset = true) {
+  const list = document.querySelector('#notifications-list');
+  const message = document.querySelector('#notifications-message');
+  if (reset) {
+    notificationOffset = 0;
+    notificationHasMore = false;
+    list.innerHTML = '<div class="notifications-loading">Loading your updates…</div>';
+  }
+  try {
+    const result = await api(`/notifications/me?limit=${NOTIFICATION_PAGE_SIZE}&offset=${notificationOffset}`);
+    renderNotificationCount(result.unread_count);
+    renderNotifications(result.items || [], !reset);
+    notificationHasMore = result.has_more;
+    notificationOffset = result.next_offset ?? notificationOffset;
+    document.querySelector('#notifications-load-more').classList.toggle('is-hidden', !notificationHasMore);
+    return result;
+  } catch (error) {
+    if (reset) list.innerHTML = '';
+    message.textContent = error.message || 'Notifications could not be loaded.';
+    return null;
+  }
+}
+
+document.querySelector('#notifications-button').addEventListener('click', async () => {
+  const dialog = document.querySelector('#notifications-dialog');
+  dialog.showModal();
+  await loadNotifications();
+});
+document.querySelector('.notifications-close').addEventListener('click', () => document.querySelector('#notifications-dialog').close());
+document.querySelector('#notifications-load-more').addEventListener('click', () => loadNotifications(false));
+document.querySelector('#notifications-list').addEventListener('click', async (event) => {
+  const markButton = event.target.closest('[data-mark-notification]');
+  const actionLink = event.target.closest('.notification-action');
+  if (actionLink) {
+    document.querySelector('#notifications-dialog').close();
+    const hash = new URL(actionLink.href).hash;
+    if (hash) document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    event.preventDefault();
+    return;
+  }
+  if (!markButton) return;
+  markButton.disabled = true;
+  try {
+    await api(`/notifications/${markButton.dataset.markNotification}/read`, { method: 'PATCH' });
+    await loadNotifications();
+  } catch (error) {
+    document.querySelector('#notifications-message').textContent = error.message;
+    markButton.disabled = false;
+  }
+});
+document.querySelector('#notifications-read-all').addEventListener('click', async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    await api('/notifications/read-all', { method: 'POST' });
+    await loadNotifications();
+  } catch (error) {
+    document.querySelector('#notifications-message').textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.querySelector('#daily-goal-reminder').addEventListener('click', async (event) => {
+  const button = event.currentTarget;
+  const message = document.querySelector('#daily-goal-message');
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const utcOffsetMinutes = new Date().getTimezoneOffset();
+  button.disabled = true;
+  try {
+    const result = await api(`/notifications/daily-goal-reminder?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`, { method: 'POST' });
+    message.textContent = result.message;
+    message.style.color = result.status === 'goal_complete' ? '#9de3b3' : '';
+    button.textContent = result.status === 'goal_complete' ? 'Goal complete ✓' : 'Reminder saved ✓';
+    if (result.status !== 'goal_complete') await loadNotifications();
+  } catch (error) {
+    message.textContent = error.message;
+    button.disabled = false;
+  }
+});
+
 document.querySelector('#view-badges-link').addEventListener('click', () => {
   document.querySelector('#badge-collection-details').open = true;
 });
@@ -831,6 +946,7 @@ async function loadDashboard(celebrateNew = false) {
       api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api(`/gamification/activity-calendar?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api(`/activity/me?limit=${ACTIVITY_PAGE_SIZE}&offset=0`),
+      api(`/notifications/me?limit=${NOTIFICATION_PAGE_SIZE}&offset=0`),
     ]);
     if (gamification[0].status === 'fulfilled') {
       document.querySelector('#stat-streak').textContent = `${gamification[0].value.current_streak} ${gamification[0].value.current_streak === 1 ? 'day' : 'days'}`;
@@ -862,6 +978,12 @@ async function loadDashboard(celebrateNew = false) {
       document.querySelector('#activity-error').classList.remove('is-hidden');
       document.querySelector('#activity-load-more').classList.add('is-hidden');
     }
+    if (gamification[5].status === 'fulfilled') {
+      renderNotificationCount(gamification[5].value.unread_count);
+      renderNotifications(gamification[5].value.items || []);
+      notificationHasMore = gamification[5].value.has_more;
+      notificationOffset = gamification[5].value.next_offset ?? 0;
+    } else renderNotificationCount(0);
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
 

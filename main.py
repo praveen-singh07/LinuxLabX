@@ -20,6 +20,7 @@ from app.api.routes.dashboard import router as dashboard_router
 from app.api.routes.gamification import router as gamification_router
 from app.api.routes.learning_paths import router as learning_paths_router
 from app.api.routes.lesson_completion import router as lesson_completion_router
+from app.api.routes.notifications import router as notifications_router
 from app.api.routes.lessons import router as lessons_router
 from app.api.routes.practice import router as practice_router
 from app.api.routes.quizzes import router as quizzes_router
@@ -28,6 +29,7 @@ from app.models.challenge import Challenge, ChallengeAttempt  # noqa: F401
 from app.models.achievement import Achievement, UserAchievement  # noqa: F401
 from app.models.admin_audit import AdminAuditLog  # noqa: F401
 from app.models.daily_learning_goal import DailyLearningGoal  # noqa: F401
+from app.models.notification import Notification  # noqa: F401
 from app.models.learning_path import LearningPath  # noqa: F401
 from app.models.lesson_completion import LessonCompletion  # noqa: F401
 from app.models.practice import PracticeAttempt, PracticeExercise  # noqa: F401
@@ -50,6 +52,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth_router)
 app.include_router(achievements_router)
 app.include_router(activity_router)
+app.include_router(notifications_router)
 app.include_router(dashboard_router)
 app.include_router(gamification_router)
 app.include_router(lessons_router)
