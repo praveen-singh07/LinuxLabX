@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
+from app.models.practice import PracticeExercise
 from app.schemas.practice import (
     PracticeAnswerSubmit,
     PracticeExercisePublic,
@@ -16,6 +17,7 @@ from app.services.practice_service import (
     list_user_practice_attempts,
     submit_practice_answer,
 )
+from app.services.notification_service import create_badge_notifications, create_notification
 
 router = APIRouter(prefix="/practice", tags=["Practice"])
 
@@ -55,6 +57,16 @@ def submit_answer(
         )
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from None
+    if attempt.is_correct:
+        exercise = db.get(PracticeExercise, exercise_id)
+        create_notification(
+            db, current_user.id, "learning", "Practice exercise solved",
+            f"You correctly completed {exercise.title} and earned {xp_awarded} XP.",
+            f"practice-solved:{attempt.id}", "/app/dashboard#practice-title",
+        )
+    create_badge_notifications(db, current_user.id, newly_unlocked)
+    if attempt.is_correct or newly_unlocked:
+        db.commit()
     return PracticeResult(
         attempt_id=attempt.id,
         exercise_id=exercise_id,

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
+from app.models.quiz import Quiz
 from app.schemas.quiz import (
     QuizAttemptHistoryItem,
     QuizPublic,
@@ -17,6 +18,7 @@ from app.services.quiz_service import (
     list_user_attempts,
     submit_quiz,
 )
+from app.services.notification_service import create_badge_notifications, create_notification
 
 router = APIRouter(prefix="/quizzes", tags=["Quizzes"])
 
@@ -59,6 +61,16 @@ def attempt_quiz(
         raise HTTPException(status_code=404, detail=str(exc)) from None
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from None
+    quiz = db.get(Quiz, quiz_id)
+    if passed:
+        create_notification(
+            db, current_user.id, "learning", "Quiz passed",
+            f"You passed {quiz.title} with {attempt.percentage}% and earned {xp_awarded} XP.",
+            f"quiz-passed:{attempt.id}", "/app/dashboard#quizzes-title",
+        )
+    create_badge_notifications(db, current_user.id, newly_unlocked)
+    if passed or newly_unlocked:
+        db.commit()
     return QuizResult(
         attempt_id=attempt.id,
         quiz_id=attempt.quiz_id,

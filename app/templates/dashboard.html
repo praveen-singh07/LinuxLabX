@@ -50,7 +50,7 @@
       <section id="dashboard-content" class="is-hidden">
         <div class="welcome-row">
           <div><p class="eyebrow">WELCOME BACK</p><h2 id="welcome-title">Your learning journey</h2></div>
-          <div class="welcome-actions"><a id="admin-studio-link" class="button button-quiet is-hidden" href="/app/admin">Admin Content Studio</a><button id="account-settings-button" class="button button-quiet" type="button">Account settings</button><button id="logout-button" class="button button-quiet" type="button">Sign out</button></div>
+          <div class="welcome-actions"><a id="admin-studio-link" class="button button-quiet is-hidden" href="/app/admin">Admin Content Studio</a><button id="notifications-button" class="button button-quiet notification-trigger" type="button" aria-label="Notifications, 0 unread">♧ <span>Notifications</span><b id="notification-unread-count" class="notification-count is-hidden">0</b></button><button id="account-settings-button" class="button button-quiet" type="button">Account settings</button><button id="logout-button" class="button button-quiet" type="button">Sign out</button></div>
         </div>
         <div class="stat-grid" aria-label="Learning summary">
           <article class="stat-card"><span class="stat-icon xp-icon">✦</span><div><strong id="stat-xp">0 XP</strong><span id="stat-level">Level 1</span></div></article>
@@ -70,6 +70,7 @@
                   <option value="75">75 XP · Focused</option><option value="100">100 XP · Ambitious</option>
                 </select>
                 <button id="daily-goal-save" class="button button-quiet" type="button">Save goal</button>
+                <button id="daily-goal-reminder" class="button button-quiet reminder-button" type="button">Remind me today</button>
               </div>
               <div id="daily-goal-meter" class="daily-goal-track" role="progressbar" aria-label="Today's XP goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                 <span id="daily-goal-fill"></span>
@@ -108,7 +109,7 @@
           <button id="activity-load-more" class="button button-quiet activity-load-more is-hidden" type="button">Load more activity</button>
         </section>
         <div class="learning-content-grid">
-          <section class="paths-section" aria-labelledby="paths-title">
+          <section id="learning-paths" class="paths-section" aria-labelledby="paths-title">
             <div class="section-heading"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2 id="paths-title">Learning paths</h2></div><span id="path-count" class="muted-label"></span></div>
             <div id="path-grid" class="path-grid"></div>
             <p id="path-empty" class="empty-state is-hidden">There are no published learning paths yet. Check back soon.</p>
@@ -219,6 +220,13 @@
         <label>Confirm new password<input name="confirm_new_password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></label>
         <button class="button button-primary" type="submit">Update password</button>
       </form>
+    </dialog>
+    <dialog id="notifications-dialog" class="notifications-dialog" aria-labelledby="notifications-title">
+      <button class="dialog-close notifications-close" type="button" aria-label="Close notifications">×</button>
+      <div class="notifications-heading"><div><p class="eyebrow">YOUR LEARNING UPDATES</p><h2 id="notifications-title">Notifications</h2></div><button id="notifications-read-all" class="button button-quiet" type="button">Mark all read</button></div>
+      <p id="notifications-message" class="notifications-message" role="status"></p>
+      <div id="notifications-list" class="notifications-list" aria-live="polite"></div>
+      <button id="notifications-load-more" class="button button-quiet notifications-load-more is-hidden" type="button">Load earlier updates</button>
     </dialog>
     <script src="/static/js/achievements.js" defer></script>
   </body>
