@@ -27,6 +27,7 @@ let pendingPracticeBadges = [];
 let currentChallenge = null;
 let pendingChallengeBadges = [];
 let completedLessonIds = new Set();
+let pathProgressById = new Map();
 const ACTIVITY_PAGE_SIZE = 10;
 let activityItems = [];
 let activityOffset = 0;
@@ -105,6 +106,7 @@ document.querySelector('#logout-button').addEventListener('click', () => {
   collection.classList.add('is-hidden');
   authPanel.classList.remove('is-hidden');
   document.querySelector('#unlocked-count').textContent = '—';
+  pathProgressById = new Map();
 });
 
 const settingsDialog = document.querySelector('#account-settings-dialog');
@@ -253,6 +255,23 @@ challengeDialog.addEventListener('cancel', (event) => {
 });
 
 pathGrid.addEventListener('click', async (event) => {
+  const continueButton = event.target.closest('[data-continue-path]');
+  if (continueButton) {
+    const progress = pathProgressById.get(Number(continueButton.dataset.continuePath));
+    if (!progress?.next_lesson_id) return;
+    continueButton.disabled = true;
+    continueButton.textContent = 'Opening lesson…';
+    try {
+      currentLesson = await api(`/lessons/${progress.next_lesson_id}`);
+      showLesson(currentLesson);
+    } catch (error) {
+      pageMessage.textContent = error.message;
+    } finally {
+      continueButton.disabled = false;
+      continueButton.textContent = 'Continue learning';
+    }
+    return;
+  }
   const button = event.target.closest('[data-path-id]');
   if (!button) return;
   const pathCard = button.closest('.path-card');
@@ -266,11 +285,12 @@ pathGrid.addEventListener('click', async (event) => {
   button.textContent = 'Loading…';
   try {
     const path = await api(`/learning-paths/${button.dataset.pathId}`);
+    const progress = pathProgressById.get(path.id);
     const panel = document.createElement('div');
     panel.className = 'path-detail';
     panel.innerHTML = path.topics.length ? path.topics.map((topic) => `
       <section class="topic-block">
-        <h4>${escapeHTML(topic.title)}</h4>
+        <div class="topic-heading"><h4>${escapeHTML(topic.title)}</h4><span>${progress?.topics.find((item) => item.topic_id === topic.id)?.completed_lessons || 0}/${topic.lessons.length} complete</span></div>
         ${topic.description ? `<p>${escapeHTML(topic.description)}</p>` : ''}
         ${topic.lessons.length ? topic.lessons.map((lesson) => {
           const done = completedLessonIds.has(lesson.id);
@@ -314,13 +334,20 @@ function renderBadges(items) {
 function renderPaths(paths) {
   document.querySelector('#path-count').textContent = `${paths.length} ${paths.length === 1 ? 'path' : 'paths'}`;
   document.querySelector('#path-empty').classList.toggle('is-hidden', paths.length > 0);
-  pathGrid.innerHTML = paths.map((path, index) => `
+  pathGrid.innerHTML = paths.map((path, index) => {
+    const progress = pathProgressById.get(path.id);
+    const percent = progress?.progress_percent || 0;
+    const hasLessons = Boolean(progress?.total_lessons);
+    return `
     <article class="path-card">
       <div class="path-card-top"><span class="path-index">PATH ${String(index + 1).padStart(2, '0')}</span><span class="muted-label">${path.topics_count} ${path.topics_count === 1 ? 'topic' : 'topics'}</span></div>
       <h3>${escapeHTML(path.title)}</h3>
       <p>${escapeHTML(path.description || 'A guided path to build your Linux skills.')}</p>
+      ${hasLessons ? `<div class="path-progress-copy"><span>${progress.completed_lessons} of ${progress.total_lessons} lessons</span><strong>${percent}%</strong></div><div class="path-progress-track" role="progressbar" aria-label="${escapeHTML(path.title)} progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}"><span style="width:${percent}%"></span></div><p class="path-next-lesson">${progress.is_complete ? 'Path complete. Review any lesson when you like.' : `Up next · ${escapeHTML(progress.next_lesson_title || 'First lesson')}${progress.next_topic_title ? ` · ${escapeHTML(progress.next_topic_title)}` : ''}`}</p>` : '<p class="path-next-lesson">Lessons will appear here as this path is published.</p>'}
+      ${hasLessons && !progress.is_complete ? `<button class="button button-primary path-continue" type="button" data-continue-path="${path.id}">${progress.completed_lessons ? 'Continue learning' : 'Start learning'}</button>` : ''}
       <button class="button path-open" type="button" data-path-id="${path.id}">Explore path</button>
-    </article>`).join('');
+    </article>`;
+  }).join('');
 }
 
 function renderQuizzes(quizzes, history) {
@@ -906,6 +933,7 @@ document.querySelector('#view-badges-link').addEventListener('click', () => {
 
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
+  pathProgressById = new Map();
   try {
     const [profile, summary, paths, completions, badges, quizzes, quizHistory, exercises, practiceHistory, challenges, challengeHistory] = await Promise.all([
       api('/auth/me'), api('/dashboard'), api('/learning-paths'),
@@ -947,6 +975,7 @@ async function loadDashboard(celebrateNew = false) {
       api(`/gamification/activity-calendar?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api(`/activity/me?limit=${ACTIVITY_PAGE_SIZE}&offset=0`),
       api(`/notifications/me?limit=${NOTIFICATION_PAGE_SIZE}&offset=0`),
+      api('/learning-paths/progress/me'),
     ]);
     if (gamification[0].status === 'fulfilled') {
       document.querySelector('#stat-streak').textContent = `${gamification[0].value.current_streak} ${gamification[0].value.current_streak === 1 ? 'day' : 'days'}`;
@@ -984,6 +1013,10 @@ async function loadDashboard(celebrateNew = false) {
       notificationHasMore = gamification[5].value.has_more;
       notificationOffset = gamification[5].value.next_offset ?? 0;
     } else renderNotificationCount(0);
+    if (gamification[6].status === 'fulfilled') {
+      pathProgressById = new Map(gamification[6].value.map((item) => [item.learning_path_id, item]));
+      renderPaths(paths);
+    } else pathProgressById = new Map();
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;
 

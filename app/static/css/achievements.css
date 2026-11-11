@@ -229,12 +229,20 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .path-index { color: #8dc8ff; font: 700 11px 'Space Grotesk', sans-serif; letter-spacing: .12em; }
 .path-card h3 { margin: 0 0 7px; font: 700 16px 'Space Grotesk', sans-serif; }
 .path-card > p { min-height: 37px; margin: 0 0 15px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.path-progress-copy { display: flex; justify-content: space-between; gap: 10px; margin: 14px 0 6px; color: #9eafc4; font-size: 9px; }
+.path-progress-copy strong { color: #a7d5ff; font-size: 10px; }
+.path-progress-track { height: 6px; margin: 0 0 8px; overflow: hidden; border-radius: 99px; background: #263449; }
+.path-progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#4b9adf,#91d1ff); transition: width .4s ease; }
+.path-card > p.path-next-lesson { min-height: 0; margin: 7px 0 12px; color: #91a5bd; font-size: 9px; }
+.path-continue { width: 100%; margin-bottom: 7px; }
 .path-meta { margin: 0 0 14px; color: #9cacc1; font-size: 10px; }
 .path-open { width: 100%; border: 1px solid #4779a8; color: #bfe0ff; background: #1734547a; }
 .path-open:hover { background: #1c4268; }
 .path-detail { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
 .topic-block + .topic-block { margin-top: 14px; }
-.topic-block h4 { margin: 0 0 4px; font: 600 12px 'Space Grotesk', sans-serif; }
+.topic-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.topic-heading h4 { margin: 0 0 4px; font: 600 12px 'Space Grotesk', sans-serif; }
+.topic-heading span { color: #87a0bc; font-size: 8px; }
 .topic-block > p { margin: 0 0 8px; color: var(--muted); font-size: 10px; }
 .lesson-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin: 5px 0; padding: 8px 9px; border: 1px solid #29364a; border-radius: 8px; color: #d6e4f5; background: #0d1522; cursor: pointer; text-align: left; font-size: 10px; }
 .lesson-link:hover { border-color: #5a91c7; background: #15253a; }
