@@ -4,14 +4,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.security import get_current_user
 from app.models.learning_path import LearningPath
+from app.models.user import User
 from app.schemas.learning_path import (
     LearningPathDetail,
     LearningPathSummary,
     LessonInTopic,
     TopicSummary,
 )
+from app.schemas.path_progress import LearningPathProgress
 from app.services.learning_path_service import get_published_path, list_published_paths
+from app.services.path_progress_service import get_user_learning_path_progress
 
 router = APIRouter(prefix="/learning-paths", tags=["Learning Paths"])
 
@@ -68,6 +72,13 @@ def list_learning_paths(db: Session = Depends(get_db)):
         )
         for p in list_published_paths(db)
     ]
+
+
+@router.get("/progress/me", response_model=list[LearningPathProgress])
+def my_learning_path_progress(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    return get_user_learning_path_progress(db, current_user.id)
 
 
 @router.get("/{path_id}", response_model=LearningPathDetail)
