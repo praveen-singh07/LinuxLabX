@@ -13,7 +13,8 @@ router = APIRouter(prefix="/activity", tags=["Learning Activity"])
 @router.get("/me", response_model=ActivityFeedResponse)
 def read_my_activity(
     limit: int = Query(default=12, ge=1, le=50),
+    offset: int = Query(default=0, ge=0, le=500),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return get_activity_feed(db, current_user.id, limit)
+    return get_activity_feed(db, current_user.id, limit, offset)

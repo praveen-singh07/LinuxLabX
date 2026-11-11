@@ -18,3 +18,5 @@ class ActivityFeedItem(BaseModel):
 
 class ActivityFeedResponse(BaseModel):
     items: list[ActivityFeedItem]
+    has_more: bool = False
+    next_offset: int | None = None

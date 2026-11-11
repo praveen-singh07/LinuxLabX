@@ -18,6 +18,7 @@ from app.services.admin_user_service import (
     get_overview,
     list_users,
 )
+from app.services.admin_audit_service import record_admin_action
 
 router = APIRouter(
     prefix="/admin",
@@ -65,6 +66,20 @@ def admin_set_user_status(
     if user.role == "admin" and user.is_active and not data.is_active:
         if count_active_admins(db) <= 1:
             raise HTTPException(status_code=409, detail="The last active administrator cannot be suspended")
+    previous_value = "active" if user.is_active else "suspended"
+    new_value = "active" if data.is_active else "suspended"
+    if previous_value == new_value:
+        return user
+    record_admin_action(
+        db,
+        actor_user_id=current_admin.id,
+        actor_name=current_admin.name,
+        target_user_id=user.id,
+        target_name=user.name,
+        action="account.status",
+        previous_value=previous_value,
+        new_value=new_value,
+    )
     user.is_active = data.is_active
     db.commit()
     db.refresh(user)
@@ -86,6 +101,19 @@ def admin_set_user_role(
     if user.role == "admin" and user.is_active and data.role != "admin":
         if count_active_admins(db) <= 1:
             raise HTTPException(status_code=409, detail="The last active administrator cannot be demoted")
+    previous_value = user.role
+    if previous_value == data.role:
+        return user
+    record_admin_action(
+        db,
+        actor_user_id=current_admin.id,
+        actor_name=current_admin.name,
+        target_user_id=user.id,
+        target_name=user.name,
+        action="account.role",
+        previous_value=previous_value,
+        new_value=data.role,
+    )
     user.role = data.role
     db.commit()
     db.refresh(user)

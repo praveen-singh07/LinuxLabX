@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 
 from app.core.security import hash_password
 from app.models.user import User
@@ -53,6 +53,73 @@ def test_streak_accepts_browser_offset_for_windows_timezone_fallback(
 
     assert response.status_code == 200, response.text
     assert response.json()["timezone"] == "Asia/Kolkata"
+
+
+def test_activity_calendar_returns_four_monday_aligned_weeks_and_unique_active_days(
+    client, db, auth_headers, test_user
+):
+    now = datetime.now(UTC).replace(microsecond=0)
+    for activity_id, days_ago in enumerate((0, 0, 3, 40), start=1):
+        db.add(
+            XPEvent(
+                user_id=test_user.id,
+                activity_type="lesson",
+                activity_id=activity_id,
+                event_type="completion",
+                xp_amount=10,
+                created_at=(now - timedelta(days=days_ago)).replace(tzinfo=None),
+            )
+        )
+    db.commit()
+
+    response = client.get(
+        "/gamification/activity-calendar?timezone=UTC", headers=auth_headers
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert len(body["days"]) == 28
+    assert body["active_days"] == 2
+    start = datetime.fromisoformat(body["start_date"]).date()
+    end = datetime.fromisoformat(body["end_date"]).date()
+    assert start.weekday() == 0
+    assert end.weekday() == 6
+    assert (end - start).days == 27
+    by_day = {entry["day"]: entry for entry in body["days"]}
+    assert by_day[now.date().isoformat()]["is_active"] is True
+    assert by_day[(now.date() - timedelta(days=3)).isoformat()]["is_active"] is True
+    assert by_day[(now.date() - timedelta(days=1)).isoformat()]["is_active"] is False
+
+
+def test_activity_calendar_uses_learners_local_date_and_requires_authentication(
+    client, db, auth_headers, test_user
+):
+    local_timezone = timezone(timedelta(hours=5, minutes=30))
+    local_today = datetime.now(UTC).astimezone(local_timezone).date()
+    local_midnight_utc = datetime.combine(
+        local_today, datetime.min.time(), tzinfo=local_timezone
+    ).astimezone(UTC)
+    db.add(
+        XPEvent(
+            user_id=test_user.id,
+            activity_type="lesson",
+            activity_id=20,
+            event_type="completion",
+            xp_amount=10,
+            created_at=(local_midnight_utc + timedelta(minutes=5)).replace(tzinfo=None),
+        )
+    )
+    db.commit()
+
+    response = client.get(
+        "/gamification/activity-calendar?timezone=Asia%2FKolkata&utc_offset_minutes=-330",
+        headers=auth_headers,
+    )
+    assert response.status_code == 200, response.text
+    today = next(day for day in response.json()["days"] if day["is_today"])
+    assert today["day"] == local_today.isoformat()
+    assert today["is_active"] is True
+    assert client.get("/gamification/activity-calendar").status_code == 401
 
 
 def test_leaderboard_ranks_active_students_and_marks_current_user(

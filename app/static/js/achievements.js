@@ -27,6 +27,11 @@ let pendingPracticeBadges = [];
 let currentChallenge = null;
 let pendingChallengeBadges = [];
 let completedLessonIds = new Set();
+const ACTIVITY_PAGE_SIZE = 10;
+let activityItems = [];
+let activityOffset = 0;
+let activityHasMore = false;
+let activityFilter = 'all';
 
 function escapeHTML(value) {
   return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -660,9 +665,7 @@ function celebrateBadges(badges) {
   dialog.showModal();
 }
 
-function renderGamification(streak, leaderboard) {
-  document.querySelector('#stat-streak').textContent = `${streak.current_streak} ${streak.current_streak === 1 ? 'day' : 'days'}`;
-  document.querySelector('#streak-best').textContent = `Best: ${streak.longest_streak} days · ${streak.active_days_this_week}/7 this week`;
+function renderGamification(leaderboard) {
   const list = document.querySelector('#leaderboard-list');
   const entries = leaderboard.entries || [];
   document.querySelector('#leaderboard-empty').classList.toggle('is-hidden', entries.length > 0);
@@ -677,22 +680,114 @@ function renderGamification(streak, leaderboard) {
     ? `Your rank: #${leaderboard.current_user_rank}` : 'Your rank will appear after earning XP';
 }
 
-function renderActivityFeed(response) {
+function renderDailyGoal(goal) {
+  const target = document.querySelector('#daily-goal-target');
+  const percent = Math.max(0, Math.min(100, goal.progress_percent));
+  target.value = String(goal.target_xp);
+  document.querySelector('#daily-goal-fill').style.width = `${percent}%`;
+  document.querySelector('#daily-goal-meter').setAttribute('aria-valuenow', String(percent));
+  document.querySelector('#daily-goal-summary').textContent = goal.is_complete
+    ? `Goal complete · ${goal.earned_xp} of ${goal.target_xp} XP earned today`
+    : `${goal.earned_xp} of ${goal.target_xp} XP today · ${goal.remaining_xp} XP to go`;
+}
+
+function renderStreakCalendar(calendar) {
+  const grid = document.querySelector('#streak-calendar-grid');
+  document.querySelector('#streak-calendar-message').textContent = '';
+  document.querySelector('#streak-calendar-count').textContent = `${calendar.active_days} active ${calendar.active_days === 1 ? 'day' : 'days'} in the last four weeks`;
+  grid.innerHTML = calendar.days.map((day) => {
+    const state = day.is_active ? 'active' : day.is_future ? 'upcoming' : 'rest';
+    const label = `${day.day}${day.is_active ? ', learning activity' : day.is_future ? ', upcoming' : ', no activity'}`;
+    const dateLabel = day.day.slice(-2).replace(/^0/, '');
+    return `<span class="streak-calendar-day is-${state}${day.is_today ? ' is-today' : ''}" role="listitem" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}">${dateLabel}</span>`;
+  }).join('');
+}
+
+function renderActivityFeed() {
   const feed = document.querySelector('#activity-feed');
-  const items = response.items || [];
-  document.querySelector('#activity-empty').classList.toggle('is-hidden', items.length > 0);
+  const items = activityFilter === 'all'
+    ? activityItems
+    : activityItems.filter((item) => item.activity_type === activityFilter);
+  const emptyMessage = document.querySelector('#activity-empty');
+  emptyMessage.textContent = activityItems.length === 0
+    ? 'Your lesson, quiz, practice, and challenge activity will appear here.'
+    : `No ${activityFilter} activity in the loaded history yet. Load more to look further back.`;
+  emptyMessage.classList.toggle('is-hidden', items.length > 0);
   document.querySelector('#activity-error').classList.add('is-hidden');
+  document.querySelector('#activity-count').textContent = activityItems.length
+    ? `${activityItems.length} ${activityItems.length === 1 ? 'activity' : 'activities'} loaded`
+    : 'Your latest learning wins';
   const icons = { lesson: '⌘', quiz: '▤', practice: '✓', challenge: '⚑' };
   const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   feed.innerHTML = items.map((item) => {
     const date = formatter.format(new Date(item.happened_at));
     return `<article class="activity-row">
-      <span class="activity-icon activity-${escapeHTML(item.activity_type)}">${icons[item.activity_type] || '•'}</span>
+      <span class="activity-icon activity-${escapeHTML(item.activity_type)}" aria-hidden="true">${icons[item.activity_type] || '•'}</span>
       <div class="activity-copy"><div class="activity-title-row"><strong>${escapeHTML(item.title)}</strong><span class="activity-status">${escapeHTML(item.status)}</span></div><p>${escapeHTML(item.detail)}</p></div>
       <time class="activity-time" datetime="${escapeHTML(item.happened_at)}">${escapeHTML(date)}</time>
     </article>`;
   }).join('');
+  document.querySelector('#activity-load-more').classList.toggle('is-hidden', !activityHasMore);
 }
+
+async function loadMoreActivity() {
+  const button = document.querySelector('#activity-load-more');
+  button.disabled = true;
+  button.textContent = 'Loading activity…';
+  try {
+    const response = await api(`/activity/me?limit=${ACTIVITY_PAGE_SIZE}&offset=${activityOffset}`);
+    activityItems = activityItems.concat(response.items || []);
+    activityOffset = response.next_offset ?? activityOffset;
+    activityHasMore = response.has_more;
+    renderActivityFeed();
+  } catch (error) {
+    document.querySelector('#activity-error').textContent = error.message || 'Activity history is temporarily unavailable.';
+    document.querySelector('#activity-error').classList.remove('is-hidden');
+    button.classList.add('is-hidden');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Load more activity';
+  }
+}
+
+document.querySelectorAll('[data-activity-filter]').forEach((button) => {
+  button.addEventListener('click', () => {
+    activityFilter = button.dataset.activityFilter;
+    document.querySelectorAll('[data-activity-filter]').forEach((filterButton) => {
+      const isActive = filterButton === button;
+      filterButton.classList.toggle('is-active', isActive);
+      filterButton.setAttribute('aria-pressed', String(isActive));
+    });
+    renderActivityFeed();
+  });
+});
+document.querySelector('#activity-load-more').addEventListener('click', loadMoreActivity);
+
+async function saveDailyGoal() {
+  const message = document.querySelector('#daily-goal-message');
+  const button = document.querySelector('#daily-goal-save');
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const utcOffsetMinutes = new Date().getTimezoneOffset();
+  button.disabled = true;
+  message.textContent = '';
+  try {
+    const goal = await api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`, {
+      method: 'PUT',
+      body: JSON.stringify({ target_xp: Number(document.querySelector('#daily-goal-target').value) }),
+    });
+    renderDailyGoal(goal);
+    message.textContent = 'Daily goal saved.';
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.querySelector('#daily-goal-save').addEventListener('click', saveDailyGoal);
+document.querySelector('#view-badges-link').addEventListener('click', () => {
+  document.querySelector('#badge-collection-details').open = true;
+});
 
 async function loadDashboard(celebrateNew = false) {
   pageMessage.textContent = '';
@@ -725,25 +820,47 @@ async function loadDashboard(celebrateNew = false) {
     renderPractice(exercises, practiceHistory);
     renderChallenges(challenges, challengeHistory);
     renderBadges(badges.achievements);
+    activityItems = [];
+    activityOffset = 0;
+    activityHasMore = false;
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     const utcOffsetMinutes = new Date().getTimezoneOffset();
-    const dashboardExtras = await Promise.allSettled([
+    const gamification = await Promise.allSettled([
       api(`/gamification/streak?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api('/gamification/leaderboard?limit=10'),
-      api('/activity/me?limit=12'),
+      api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
+      api(`/gamification/activity-calendar?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
+      api(`/activity/me?limit=${ACTIVITY_PAGE_SIZE}&offset=0`),
     ]);
-    if (dashboardExtras[0].status === 'fulfilled' && dashboardExtras[1].status === 'fulfilled') {
-      renderGamification(dashboardExtras[0].value, dashboardExtras[1].value);
+    if (gamification[0].status === 'fulfilled') {
+      document.querySelector('#stat-streak').textContent = `${gamification[0].value.current_streak} ${gamification[0].value.current_streak === 1 ? 'day' : 'days'}`;
+      document.querySelector('#streak-best').textContent = `Best: ${gamification[0].value.longest_streak} days · ${gamification[0].value.active_days_this_week}/7 this week`;
     } else {
       document.querySelector('#stat-streak').textContent = '—';
       document.querySelector('#streak-best').textContent = 'Streak unavailable';
+    }
+    if (gamification[1].status === 'fulfilled') {
+      renderGamification(gamification[1].value);
+    } else {
       document.querySelector('#leaderboard-rank').textContent = 'Leaderboard unavailable';
     }
-    if (dashboardExtras[2].status === 'fulfilled') {
-      renderActivityFeed(dashboardExtras[2].value);
+    if (gamification[2].status === 'fulfilled') renderDailyGoal(gamification[2].value);
+    else document.querySelector('#daily-goal-summary').textContent = 'Daily goal unavailable right now.';
+    if (gamification[3].status === 'fulfilled') renderStreakCalendar(gamification[3].value);
+    else {
+      document.querySelector('#streak-calendar-count').textContent = 'Calendar unavailable';
+      document.querySelector('#streak-calendar-grid').innerHTML = '';
+      document.querySelector('#streak-calendar-message').textContent = 'Activity calendar is temporarily unavailable.';
+    }
+    if (gamification[4].status === 'fulfilled') {
+      activityItems = gamification[4].value.items || [];
+      activityHasMore = gamification[4].value.has_more;
+      activityOffset = gamification[4].value.next_offset ?? 0;
+      renderActivityFeed();
     } else {
       document.querySelector('#activity-empty').classList.add('is-hidden');
       document.querySelector('#activity-error').classList.remove('is-hidden');
+      document.querySelector('#activity-load-more').classList.add('is-hidden');
     }
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;

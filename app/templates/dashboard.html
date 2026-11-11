@@ -59,58 +59,97 @@
           <article class="stat-card"><span class="stat-icon quiz-icon">▤</span><div><strong id="stat-activities">0</strong><span>Quizzes &amp; challenges</span></div></article>
           <article class="stat-card streak-stat"><span class="stat-icon streak-icon">🔥</span><div><strong id="stat-streak">0 days</strong><span id="streak-best">Best: 0 days</span></div></article>
         </div>
-        <section class="progress-panel" aria-labelledby="progress-title">
-          <div class="progress-copy"><div><p class="eyebrow">LESSON PROGRESS</p><h2 id="progress-title">Keep your momentum</h2></div><strong id="progress-label">0%</strong></div>
-          <div class="progress-track"><span id="progress-fill"></span></div>
-          <p id="last-activity" class="last-activity">Complete a lesson to start tracking your progress.</p>
-        </section>
+        <div class="habit-grid">
+          <div class="habit-summary-stack">
+            <section class="daily-goal-panel" aria-labelledby="daily-goal-title">
+              <div class="daily-goal-heading">
+                <div><p class="eyebrow">BUILD A DAILY HABIT</p><h2 id="daily-goal-title">Today's learning goal</h2></div>
+                <label for="daily-goal-target">Daily target</label>
+                <select id="daily-goal-target" class="daily-goal-select" aria-label="Daily XP goal">
+                  <option value="25">25 XP · Easy</option><option value="50">50 XP · Steady</option>
+                  <option value="75">75 XP · Focused</option><option value="100">100 XP · Ambitious</option>
+                </select>
+                <button id="daily-goal-save" class="button button-quiet" type="button">Save goal</button>
+              </div>
+              <div id="daily-goal-meter" class="daily-goal-track" role="progressbar" aria-label="Today's XP goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <span id="daily-goal-fill"></span>
+              </div>
+              <div class="daily-goal-footer"><span id="daily-goal-summary">Loading today's progress…</span><span id="daily-goal-message" role="status"></span></div>
+            </section>
+            <section class="progress-panel" aria-labelledby="progress-title">
+              <div class="progress-copy"><div><p class="eyebrow">LESSON PROGRESS</p><h2 id="progress-title">Keep your momentum</h2></div><strong id="progress-label">0%</strong></div>
+              <div class="progress-track"><span id="progress-fill"></span></div>
+              <p id="last-activity" class="last-activity">Complete a lesson to start tracking your progress.</p>
+            </section>
+          </div>
+          <section class="streak-calendar-panel" aria-labelledby="streak-calendar-title">
+            <div class="streak-calendar-heading"><div><p class="eyebrow">CONSISTENCY BUILDS SKILL</p><h2 id="streak-calendar-title">Your streak calendar</h2></div><span id="streak-calendar-count" class="muted-label">Loading activity…</span></div>
+            <div class="streak-weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+            <div id="streak-calendar-grid" class="streak-calendar-grid" role="list" aria-label="Learning activity for the last four weeks"></div>
+            <div class="streak-calendar-legend"><span><i class="calendar-swatch"></i>No activity</span><span><i class="calendar-swatch is-active"></i>Learning activity</span></div>
+            <p id="streak-calendar-message" class="calendar-message" role="status"></p>
+          </section>
+        </div>
         <section class="activity-section" aria-labelledby="activity-title">
-          <div class="section-heading"><div><p class="eyebrow">YOUR LEARNING JOURNEY</p><h2 id="activity-title">Recent learning activity</h2></div><span class="muted-label">Latest 12 activities</span></div>
-          <div id="activity-feed" class="activity-feed"></div>
-          <p id="activity-empty" class="empty-state is-hidden">Your lesson completions, quiz attempts, practice, and challenge results will appear here.</p>
+          <div class="section-heading activity-heading">
+            <div><p class="eyebrow">YOUR LEARNING JOURNEY</p><h2 id="activity-title">Recent activity</h2></div>
+            <span id="activity-count" class="muted-label">Your latest learning wins</span>
+          </div>
+          <div class="activity-filters" role="group" aria-label="Filter activity">
+            <button class="activity-filter is-active" type="button" data-activity-filter="all" aria-pressed="true">All</button>
+            <button class="activity-filter" type="button" data-activity-filter="lesson" aria-pressed="false">Lessons</button>
+            <button class="activity-filter" type="button" data-activity-filter="quiz" aria-pressed="false">Quizzes</button>
+            <button class="activity-filter" type="button" data-activity-filter="practice" aria-pressed="false">Practice</button>
+            <button class="activity-filter" type="button" data-activity-filter="challenge" aria-pressed="false">Challenges</button>
+          </div>
+          <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
+          <p id="activity-empty" class="empty-state is-hidden">Your lesson, quiz, practice, and challenge activity will appear here.</p>
           <p id="activity-error" class="empty-state is-hidden" role="status">Activity history is temporarily unavailable.</p>
+          <button id="activity-load-more" class="button button-quiet activity-load-more is-hidden" type="button">Load more activity</button>
         </section>
-        <section class="paths-section" aria-labelledby="paths-title">
-          <div class="section-heading"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2 id="paths-title">Learning paths</h2></div><span id="path-count" class="muted-label"></span></div>
-          <div id="path-grid" class="path-grid"></div>
-          <p id="path-empty" class="empty-state is-hidden">There are no published learning paths yet. Check back soon.</p>
-        </section>
-        <section class="quiz-section" aria-labelledby="quizzes-title">
-          <div class="section-heading">
-            <div><p class="eyebrow">CHECK YOUR LINUX KNOWLEDGE</p><h2 id="quizzes-title">Quizzes</h2></div>
-            <span id="quiz-count" class="muted-label"></span>
-          </div>
-          <div id="quiz-grid" class="quiz-grid"></div>
-          <p id="quiz-empty" class="empty-state is-hidden">No published quizzes yet. Check back soon.</p>
-          <div id="quiz-history" class="quiz-history is-hidden">
-            <h3>Recent attempts</h3>
-            <div id="quiz-history-list"></div>
-          </div>
-        </section>
-        <section class="practice-section" aria-labelledby="practice-title">
-          <div class="section-heading">
-            <div><p class="eyebrow">PUT YOUR COMMANDS TO WORK</p><h2 id="practice-title">Practice exercises</h2></div>
-            <span id="practice-count" class="muted-label"></span>
-          </div>
-          <div id="practice-grid" class="practice-grid"></div>
-          <p id="practice-empty" class="empty-state is-hidden">No published practice exercises yet. Check back soon.</p>
-          <div id="practice-history" class="practice-history is-hidden">
-            <h3>Recent submissions</h3>
-            <div id="practice-history-list"></div>
-          </div>
-        </section>
-        <section class="challenge-section" aria-labelledby="challenges-title">
-          <div class="section-heading">
-            <div><p class="eyebrow">SOLVE REAL TERMINAL SCENARIOS</p><h2 id="challenges-title">Challenges</h2></div>
-            <span id="challenge-count" class="muted-label"></span>
-          </div>
-          <div id="challenge-grid" class="challenge-grid"></div>
-          <p id="challenge-empty" class="empty-state is-hidden">No published challenges yet. Check back soon.</p>
-          <div id="challenge-history" class="challenge-history is-hidden">
-            <h3>Recent attempts</h3>
-            <div id="challenge-history-list"></div>
-          </div>
-        </section>
+        <div class="learning-content-grid">
+          <section class="paths-section" aria-labelledby="paths-title">
+            <div class="section-heading"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2 id="paths-title">Learning paths</h2></div><span id="path-count" class="muted-label"></span></div>
+            <div id="path-grid" class="path-grid"></div>
+            <p id="path-empty" class="empty-state is-hidden">There are no published learning paths yet. Check back soon.</p>
+          </section>
+          <section class="quiz-section" aria-labelledby="quizzes-title">
+            <div class="section-heading">
+              <div><p class="eyebrow">CHECK YOUR LINUX KNOWLEDGE</p><h2 id="quizzes-title">Quizzes</h2></div>
+              <span id="quiz-count" class="muted-label"></span>
+            </div>
+            <div id="quiz-grid" class="quiz-grid"></div>
+            <p id="quiz-empty" class="empty-state is-hidden">No published quizzes yet. Check back soon.</p>
+            <div id="quiz-history" class="quiz-history is-hidden">
+              <h3>Recent attempts</h3>
+              <div id="quiz-history-list"></div>
+            </div>
+          </section>
+          <section class="practice-section" aria-labelledby="practice-title">
+            <div class="section-heading">
+              <div><p class="eyebrow">PUT YOUR COMMANDS TO WORK</p><h2 id="practice-title">Practice exercises</h2></div>
+              <span id="practice-count" class="muted-label"></span>
+            </div>
+            <div id="practice-grid" class="practice-grid"></div>
+            <p id="practice-empty" class="empty-state is-hidden">No published practice exercises yet. Check back soon.</p>
+            <div id="practice-history" class="practice-history is-hidden">
+              <h3>Recent submissions</h3>
+              <div id="practice-history-list"></div>
+            </div>
+          </section>
+          <section class="challenge-section" aria-labelledby="challenges-title">
+            <div class="section-heading">
+              <div><p class="eyebrow">SOLVE REAL TERMINAL SCENARIOS</p><h2 id="challenges-title">Challenges</h2></div>
+              <span id="challenge-count" class="muted-label"></span>
+            </div>
+            <div id="challenge-grid" class="challenge-grid"></div>
+            <p id="challenge-empty" class="empty-state is-hidden">No published challenges yet. Check back soon.</p>
+            <div id="challenge-history" class="challenge-history is-hidden">
+              <h3>Recent attempts</h3>
+              <div id="challenge-history-list"></div>
+            </div>
+          </section>
+        </div>
         <section class="leaderboard-section" aria-labelledby="leaderboard-title">
           <div class="section-heading"><div><p class="eyebrow">LEARN TOGETHER</p><h2 id="leaderboard-title">Global leaderboard</h2></div><span id="leaderboard-rank" class="muted-label"></span></div>
           <div id="leaderboard-list" class="leaderboard-list"></div>
@@ -118,7 +157,7 @@
         </section>
         <section id="achievements" class="achievement-preview">
           <div><p class="eyebrow">COLLECT YOUR MILESTONES</p><h2>My Achievements</h2><p id="achievement-summary" class="hero-copy">Your badges appear here as you learn.</p></div>
-          <a class="button button-primary" href="#collection">View all badges <span aria-hidden="true">→</span></a>
+          <a id="view-badges-link" class="button button-primary" href="#collection">View all badges <span aria-hidden="true">→</span></a>
         </section>
       </section>
 
@@ -130,7 +169,10 @@
           </div>
           <a class="button button-quiet" href="/app/dashboard">← Dashboard</a>
         </div>
-        <div id="badge-grid" class="badge-grid"></div>
+        <details id="badge-collection-details" class="badge-collection-details">
+          <summary>Browse all 12 achievements <span>Open badge collection</span></summary>
+          <div id="badge-grid" class="badge-grid"></div>
+        </details>
       </section>
       <p id="page-message" class="page-message" role="status"></p>
       <footer>LinuxLabX <span>·</span> Keep learning. Your next badge is waiting.</footer>

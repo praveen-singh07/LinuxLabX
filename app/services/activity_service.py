@@ -20,16 +20,17 @@ def _as_utc(value: datetime) -> datetime:
 
 
 def get_activity_feed(
-    db: Session, user_id: int, limit: int = 12
+    db: Session, user_id: int, limit: int = 12, offset: int = 0
 ) -> ActivityFeedResponse:
     items: list[ActivityFeedItem] = []
+    fetch_limit = offset + limit + 1
 
     lesson_rows = db.execute(
         select(LessonCompletion, Lesson.title)
         .join(Lesson, Lesson.id == LessonCompletion.lesson_id)
         .where(LessonCompletion.user_id == user_id)
         .order_by(LessonCompletion.completed_at.desc(), LessonCompletion.id.desc())
-        .limit(limit)
+        .limit(fetch_limit)
     ).all()
     for completion, title in lesson_rows:
         items.append(
@@ -48,7 +49,7 @@ def get_activity_feed(
         .join(Quiz, Quiz.id == QuizAttempt.quiz_id)
         .where(QuizAttempt.user_id == user_id)
         .order_by(QuizAttempt.submitted_at.desc(), QuizAttempt.id.desc())
-        .limit(limit)
+        .limit(fetch_limit)
     ).all()
     for attempt, title in quiz_rows:
         items.append(
@@ -67,7 +68,7 @@ def get_activity_feed(
         .join(PracticeExercise, PracticeExercise.id == PracticeAttempt.exercise_id)
         .where(PracticeAttempt.user_id == user_id)
         .order_by(PracticeAttempt.submitted_at.desc(), PracticeAttempt.id.desc())
-        .limit(limit)
+        .limit(fetch_limit)
     ).all()
     for attempt, title in practice_rows:
         items.append(
@@ -86,7 +87,7 @@ def get_activity_feed(
         .join(Challenge, Challenge.id == ChallengeAttempt.challenge_id)
         .where(ChallengeAttempt.user_id == user_id)
         .order_by(ChallengeAttempt.submitted_at.desc(), ChallengeAttempt.id.desc())
-        .limit(limit)
+        .limit(fetch_limit)
     ).all()
     for attempt, title in challenge_rows:
         items.append(
@@ -100,5 +101,14 @@ def get_activity_feed(
             )
         )
 
-    items.sort(key=lambda item: item.happened_at, reverse=True)
-    return ActivityFeedResponse(items=items[:limit])
+    items.sort(
+        key=lambda item: (item.happened_at, item.activity_type, item.activity_id),
+        reverse=True,
+    )
+    page = items[offset : offset + limit]
+    has_more = len(items) > offset + limit
+    return ActivityFeedResponse(
+        items=page,
+        has_more=has_more,
+        next_offset=offset + len(page) if has_more else None,
+    )

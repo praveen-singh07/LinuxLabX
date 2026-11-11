@@ -69,6 +69,8 @@ let currentAdmin = null;
 let currentUsers = [];
 let usersOffset = 0;
 const usersPageSize = 20;
+let auditOffset = 0;
+const auditPageSize = 25;
 let selectedId = null;
 
 function safeText(value) {
@@ -283,15 +285,21 @@ async function startAdminStudio() {
 }
 
 function switchAdminView(view) {
+  const showContent = view === 'content';
   const showUsers = view === 'users';
+  const showAudit = view === 'audit';
   document.querySelectorAll('[data-content-view]').forEach((element) => {
-    element.classList.toggle('is-hidden', showUsers);
+    element.classList.toggle('is-hidden', !showContent);
   });
   document.querySelector('#users-panel').classList.toggle('is-hidden', !showUsers);
-  document.querySelector('#content-tab').classList.toggle('is-active', !showUsers);
+  document.querySelector('#audit-panel').classList.toggle('is-hidden', !showAudit);
+  document.querySelector('#content-tab').classList.toggle('is-active', showContent);
   document.querySelector('#users-tab').classList.toggle('is-active', showUsers);
+  document.querySelector('#audit-tab').classList.toggle('is-active', showAudit);
   if (showUsers) {
-    Promise.allSettled([loadOverview(), loadUsers()]);
+    Promise.allSettled([loadOverview(), loadUsers(), loadAnalytics()]);
+  } else if (showAudit) {
+    loadAuditLogs();
   } else {
     loadItems();
   }
@@ -309,6 +317,28 @@ async function loadOverview() {
     document.querySelector('#overview-activities').textContent = overview.practice_exercises + overview.challenges;
   } catch (error) {
     document.querySelector('#users-message').textContent = error.message;
+  }
+}
+
+async function loadAnalytics() {
+  const message = document.querySelector('#analytics-message');
+  message.textContent = '';
+  try {
+    const result = await adminApi('/admin/analytics?days=7');
+    document.querySelector('#analytics-learners').textContent = result.active_learners;
+    document.querySelector('#analytics-activities').textContent = result.activities;
+    document.querySelector('#analytics-xp').textContent = `${result.xp_earned} XP`;
+    document.querySelector('#analytics-dates').textContent = `${result.start_date} — ${result.end_date}`;
+    const maxActivities = Math.max(1, ...result.daily.map((day) => day.activities));
+    document.querySelector('#analytics-chart').innerHTML = result.daily.map((day) => {
+      const date = new Date(`${day.day}T00:00:00`);
+      const label = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).format(date);
+      const width = Math.round((day.activities / maxActivities) * 100);
+      return `<div class="analytics-row"><span class="analytics-day">${safeText(label)}</span><div class="analytics-bar-track"><span style="width:${width}%"></span></div><span class="analytics-row-summary">${day.activities} activities · ${day.active_learners} learners · ${day.xp_earned} XP</span></div>`;
+    }).join('');
+  } catch (error) {
+    message.textContent = error.message;
+    document.querySelector('#analytics-chart').innerHTML = '';
   }
 }
 
@@ -342,14 +372,50 @@ async function loadUsers() {
   }
 }
 
+async function loadAuditLogs() {
+  const params = new URLSearchParams({
+    limit: String(auditPageSize),
+    offset: String(auditOffset),
+    action: document.querySelector('#audit-action').value,
+  });
+  const search = document.querySelector('#audit-search').value.trim();
+  if (search) params.set('search', search);
+  try {
+    const result = await adminApi(`/admin/audit-logs?${params.toString()}`);
+    const entries = result.items;
+    document.querySelector('#audit-count').textContent = `${result.total} changes`;
+    document.querySelector('#audit-empty').classList.toggle('is-hidden', entries.length > 0);
+    document.querySelector('#audit-page').textContent = result.total
+      ? `${auditOffset + 1}–${Math.min(auditOffset + entries.length, result.total)} of ${result.total}` : '0 changes';
+    document.querySelector('#audit-prev').disabled = auditOffset === 0;
+    document.querySelector('#audit-next').disabled = auditOffset + auditPageSize >= result.total;
+    const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    document.querySelector('#audit-list').innerHTML = entries.map((entry) => {
+      const isRole = entry.action === 'account.role';
+      const action = isRole ? 'changed role' : 'changed account status';
+      const date = formatter.format(new Date(entry.occurred_at));
+      return `<article class="audit-row"><span class="audit-icon ${isRole ? 'role-change' : 'status-change'}">${isRole ? '↔' : '●'}</span><div class="audit-copy"><strong>${safeText(entry.actor_name)} ${action}</strong><p>${safeText(entry.target_name)} · account #${entry.target_user_id}</p></div><span class="audit-transition">${safeText(entry.previous_value)} <b>→</b> ${safeText(entry.new_value)}</span><time class="activity-time" datetime="${safeText(entry.occurred_at)}">${safeText(date)}</time></article>`;
+    }).join('');
+  } catch (error) {
+    document.querySelector('#audit-message').textContent = error.message;
+  }
+}
+
 document.querySelector('#content-tab').addEventListener('click', () => switchAdminView('content'));
 document.querySelector('#users-tab').addEventListener('click', () => switchAdminView('users'));
+document.querySelector('#audit-tab').addEventListener('click', () => switchAdminView('audit'));
 document.querySelector('#user-search-button').addEventListener('click', () => { usersOffset = 0; loadUsers(); });
 document.querySelector('#user-search').addEventListener('keydown', (event) => {
   if (event.key === 'Enter') { event.preventDefault(); usersOffset = 0; loadUsers(); }
 });
 document.querySelector('#users-prev').addEventListener('click', () => { usersOffset = Math.max(0, usersOffset - usersPageSize); loadUsers(); });
 document.querySelector('#users-next').addEventListener('click', () => { usersOffset += usersPageSize; loadUsers(); });
+document.querySelector('#audit-search-button').addEventListener('click', () => { auditOffset = 0; loadAuditLogs(); });
+document.querySelector('#audit-search').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') { event.preventDefault(); auditOffset = 0; loadAuditLogs(); }
+});
+document.querySelector('#audit-prev').addEventListener('click', () => { auditOffset = Math.max(0, auditOffset - auditPageSize); loadAuditLogs(); });
+document.querySelector('#audit-next').addEventListener('click', () => { auditOffset += auditPageSize; loadAuditLogs(); });
 document.querySelector('#users-list').addEventListener('click', async (event) => {
   const statusButton = event.target.closest('[data-user-status]');
   const roleButton = event.target.closest('[data-user-role]');
@@ -364,7 +430,7 @@ document.querySelector('#users-list').addEventListener('click', async (event) =>
     try {
       await adminApi(`/admin/users/${userId}/status`, { method: 'PATCH', body: JSON.stringify({ is_active: nextActive }) });
       document.querySelector('#users-message').textContent = `Account ${nextActive ? 'activated' : 'suspended'}.`;
-      await Promise.all([loadUsers(), loadOverview()]);
+      await Promise.all([loadUsers(), loadOverview(), loadAnalytics()]);
     } catch (error) { document.querySelector('#users-message').textContent = error.message; }
   } else {
     const nextRole = user.role === 'admin' ? 'student' : 'admin';
@@ -372,7 +438,7 @@ document.querySelector('#users-list').addEventListener('click', async (event) =>
     try {
       await adminApi(`/admin/users/${userId}/role`, { method: 'PATCH', body: JSON.stringify({ role: nextRole }) });
       document.querySelector('#users-message').textContent = `Account role changed to ${nextRole}.`;
-      await loadUsers();
+      await Promise.all([loadUsers(), loadAnalytics()]);
     } catch (error) { document.querySelector('#users-message').textContent = error.message; }
   }
 });
