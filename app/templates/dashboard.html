@@ -90,6 +90,23 @@
             <p id="streak-calendar-message" class="calendar-message" role="status"></p>
           </section>
         </div>
+        <section class="activity-section" aria-labelledby="activity-title">
+          <div class="section-heading activity-heading">
+            <div><p class="eyebrow">YOUR LEARNING JOURNEY</p><h2 id="activity-title">Recent activity</h2></div>
+            <span id="activity-count" class="muted-label">Your latest learning wins</span>
+          </div>
+          <div class="activity-filters" role="group" aria-label="Filter activity">
+            <button class="activity-filter is-active" type="button" data-activity-filter="all" aria-pressed="true">All</button>
+            <button class="activity-filter" type="button" data-activity-filter="lesson" aria-pressed="false">Lessons</button>
+            <button class="activity-filter" type="button" data-activity-filter="quiz" aria-pressed="false">Quizzes</button>
+            <button class="activity-filter" type="button" data-activity-filter="practice" aria-pressed="false">Practice</button>
+            <button class="activity-filter" type="button" data-activity-filter="challenge" aria-pressed="false">Challenges</button>
+          </div>
+          <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
+          <p id="activity-empty" class="empty-state is-hidden">Your lesson, quiz, practice, and challenge activity will appear here.</p>
+          <p id="activity-error" class="empty-state is-hidden" role="status">Activity history is temporarily unavailable.</p>
+          <button id="activity-load-more" class="button button-quiet activity-load-more is-hidden" type="button">Load more activity</button>
+        </section>
         <div class="learning-content-grid">
           <section class="paths-section" aria-labelledby="paths-title">
             <div class="section-heading"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2 id="paths-title">Learning paths</h2></div><span id="path-count" class="muted-label"></span></div>

@@ -27,6 +27,11 @@ let pendingPracticeBadges = [];
 let currentChallenge = null;
 let pendingChallengeBadges = [];
 let completedLessonIds = new Set();
+const ACTIVITY_PAGE_SIZE = 10;
+let activityItems = [];
+let activityOffset = 0;
+let activityHasMore = false;
+let activityFilter = 'all';
 
 function escapeHTML(value) {
   return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -698,6 +703,66 @@ function renderStreakCalendar(calendar) {
   }).join('');
 }
 
+function renderActivityFeed() {
+  const feed = document.querySelector('#activity-feed');
+  const items = activityFilter === 'all'
+    ? activityItems
+    : activityItems.filter((item) => item.activity_type === activityFilter);
+  const emptyMessage = document.querySelector('#activity-empty');
+  emptyMessage.textContent = activityItems.length === 0
+    ? 'Your lesson, quiz, practice, and challenge activity will appear here.'
+    : `No ${activityFilter} activity in the loaded history yet. Load more to look further back.`;
+  emptyMessage.classList.toggle('is-hidden', items.length > 0);
+  document.querySelector('#activity-error').classList.add('is-hidden');
+  document.querySelector('#activity-count').textContent = activityItems.length
+    ? `${activityItems.length} ${activityItems.length === 1 ? 'activity' : 'activities'} loaded`
+    : 'Your latest learning wins';
+  const icons = { lesson: '⌘', quiz: '▤', practice: '✓', challenge: '⚑' };
+  const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  feed.innerHTML = items.map((item) => {
+    const date = formatter.format(new Date(item.happened_at));
+    return `<article class="activity-row">
+      <span class="activity-icon activity-${escapeHTML(item.activity_type)}" aria-hidden="true">${icons[item.activity_type] || '•'}</span>
+      <div class="activity-copy"><div class="activity-title-row"><strong>${escapeHTML(item.title)}</strong><span class="activity-status">${escapeHTML(item.status)}</span></div><p>${escapeHTML(item.detail)}</p></div>
+      <time class="activity-time" datetime="${escapeHTML(item.happened_at)}">${escapeHTML(date)}</time>
+    </article>`;
+  }).join('');
+  document.querySelector('#activity-load-more').classList.toggle('is-hidden', !activityHasMore);
+}
+
+async function loadMoreActivity() {
+  const button = document.querySelector('#activity-load-more');
+  button.disabled = true;
+  button.textContent = 'Loading activity…';
+  try {
+    const response = await api(`/activity/me?limit=${ACTIVITY_PAGE_SIZE}&offset=${activityOffset}`);
+    activityItems = activityItems.concat(response.items || []);
+    activityOffset = response.next_offset ?? activityOffset;
+    activityHasMore = response.has_more;
+    renderActivityFeed();
+  } catch (error) {
+    document.querySelector('#activity-error').textContent = error.message || 'Activity history is temporarily unavailable.';
+    document.querySelector('#activity-error').classList.remove('is-hidden');
+    button.classList.add('is-hidden');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Load more activity';
+  }
+}
+
+document.querySelectorAll('[data-activity-filter]').forEach((button) => {
+  button.addEventListener('click', () => {
+    activityFilter = button.dataset.activityFilter;
+    document.querySelectorAll('[data-activity-filter]').forEach((filterButton) => {
+      const isActive = filterButton === button;
+      filterButton.classList.toggle('is-active', isActive);
+      filterButton.setAttribute('aria-pressed', String(isActive));
+    });
+    renderActivityFeed();
+  });
+});
+document.querySelector('#activity-load-more').addEventListener('click', loadMoreActivity);
+
 async function saveDailyGoal() {
   const message = document.querySelector('#daily-goal-message');
   const button = document.querySelector('#daily-goal-save');
@@ -755,6 +820,9 @@ async function loadDashboard(celebrateNew = false) {
     renderPractice(exercises, practiceHistory);
     renderChallenges(challenges, challengeHistory);
     renderBadges(badges.achievements);
+    activityItems = [];
+    activityOffset = 0;
+    activityHasMore = false;
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     const utcOffsetMinutes = new Date().getTimezoneOffset();
     const gamification = await Promise.allSettled([
@@ -762,6 +830,7 @@ async function loadDashboard(celebrateNew = false) {
       api('/gamification/leaderboard?limit=10'),
       api(`/gamification/daily-goal?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
       api(`/gamification/activity-calendar?timezone=${encodeURIComponent(timezone)}&utc_offset_minutes=${utcOffsetMinutes}`),
+      api(`/activity/me?limit=${ACTIVITY_PAGE_SIZE}&offset=0`),
     ]);
     if (gamification[0].status === 'fulfilled') {
       document.querySelector('#stat-streak').textContent = `${gamification[0].value.current_streak} ${gamification[0].value.current_streak === 1 ? 'day' : 'days'}`;
@@ -782,6 +851,16 @@ async function loadDashboard(celebrateNew = false) {
       document.querySelector('#streak-calendar-count').textContent = 'Calendar unavailable';
       document.querySelector('#streak-calendar-grid').innerHTML = '';
       document.querySelector('#streak-calendar-message').textContent = 'Activity calendar is temporarily unavailable.';
+    }
+    if (gamification[4].status === 'fulfilled') {
+      activityItems = gamification[4].value.items || [];
+      activityHasMore = gamification[4].value.has_more;
+      activityOffset = gamification[4].value.next_offset ?? 0;
+      renderActivityFeed();
+    } else {
+      document.querySelector('#activity-empty').classList.add('is-hidden');
+      document.querySelector('#activity-error').classList.remove('is-hidden');
+      document.querySelector('#activity-load-more').classList.add('is-hidden');
     }
     document.querySelector('#unlocked-count').textContent = `${badges.unlocked_count}/${badges.total}`;
     document.querySelector('#achievement-summary').textContent = `${badges.unlocked_count} of ${badges.total} badges unlocked. Your locked badges show what to work toward next.`;

@@ -106,6 +106,27 @@ h1 { margin-bottom: 10px; font-size: clamp(36px, 6vw, 54px); line-height: 1.03; 
 .calendar-swatch.is-active { border-color: #3d7654; background: #205b3a; }
 .calendar-message { margin: 5px 0 0; color: #ff9f9f; font-size: 10px; }
 .progress-panel { display: flex; flex-direction: column; justify-content: center; min-height: 124px; margin: 0; padding: 17px 19px; border: 1px solid var(--line); border-radius: 15px; background: #111a29b8; }
+.activity-section { margin: 0 0 30px; padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: linear-gradient(145deg,#111b2b,#0e1725); }
+.activity-heading { margin-bottom: 13px; }
+.activity-filters { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 13px; }
+.activity-filter { border: 1px solid #2d3b50; border-radius: 99px; padding: 7px 11px; color: var(--muted); background: #0d1623; cursor: pointer; font: inherit; font-size: 10px; font-weight: 700; transition: border-color .18s,color .18s,background .18s; }
+.activity-filter:hover { border-color: #456487; color: var(--text); }
+.activity-filter.is-active { border-color: #4779a8; color: #c5e3ff; background: #1734547a; }
+.activity-feed { display: grid; gap: 8px; }
+.activity-row { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; align-items: center; gap: 13px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 11px; background: #0d1623; }
+.activity-icon { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 10px; font: 700 15px 'Space Grotesk',sans-serif; }
+.activity-lesson { color: #81c4ff; background: #1b477035; }
+.activity-quiz { color: #d8a8ff; background: #55337435; }
+.activity-practice { color: #8ce0b1; background: #1b553535; }
+.activity-challenge { color: #f3c86f; background: #5b431a35; }
+.activity-copy { min-width: 0; }
+.activity-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.activity-title-row strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.activity-status { color: #9de3b3; font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.activity-copy p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.activity-time { color: var(--muted); font-size: 9px; white-space: nowrap; }
+.activity-load-more { display: block; margin: 12px auto 0; }
+.activity-load-more:disabled { opacity: .55; cursor: wait; }
 .progress-copy { display: flex; justify-content: space-between; align-items: end; gap: 18px; }
 .progress-copy .eyebrow { margin-bottom: 7px; }
 .progress-copy h2 { font-size: 18px; }
@@ -285,6 +306,8 @@ footer span { padding: 0 4px; color: var(--gold); }
   .learning-content-grid { gap: 22px 14px; }
   .path-grid,.quiz-grid,.practice-grid,.challenge-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .badge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .activity-row { grid-template-columns: 36px minmax(0,1fr); gap: 9px; }
+  .activity-time { grid-column: 2; }
 }
 @media (max-width: 620px) {
   .page-shell { width: min(100% - 28px, 500px); }
@@ -307,6 +330,9 @@ footer span { padding: 0 4px; color: var(--gold); }
   .streak-calendar-day { width: 27px; height: 27px; }
   .streak-calendar-legend { justify-content: flex-start; }
   .learning-content-grid { grid-template-columns: 1fr; gap: 24px; }
+  .activity-section { padding: 14px; }
+  .activity-filters { flex-wrap: nowrap; overflow-x: auto; padding: 2px 1px 7px; }
+  .activity-filter { flex: 0 0 auto; }
   .path-grid,.quiz-grid,.practice-grid,.challenge-grid { grid-template-columns: 1fr; }
   .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
   .streak-stat { grid-column: 1 / -1; }

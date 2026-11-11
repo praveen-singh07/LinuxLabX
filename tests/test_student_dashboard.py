@@ -67,6 +67,9 @@ def test_dashboard_page_and_static_assets_are_served(client):
     assert "stat-streak" in page.text
     assert "Account settings" in page.text
     assert "password-form" in page.text
+    assert 'data-activity-filter="all"' in page.text
+    assert 'id="activity-load-more"' in page.text
+    assert "Recent activity" in page.text
 
 
 def test_admin_content_studio_page_and_assets_are_served(client):
